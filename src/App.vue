@@ -110,7 +110,7 @@ const fetchTranslate = () => {
     return alert('Please type in something')
   }
 
-  axios.get(`http://api.fanyi.baidu.com/api/trans/vip/translate/api${queryStr()}`,
+  axios.get(`https://api.fanyi.baidu.com/api/trans/vip/translate/api${queryStr()}`,
   ).then(res => {
     translatedContent.value = res.data.trans_result[0].dst;
   })
