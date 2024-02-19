@@ -235,7 +235,8 @@ const onAvatarChange = e => {
       <button type="button" @click="download" style="margin-left: 2rem;">download pic</button>
     </div>
     <div class="translated-content" id="downloadContent" :style="`background-image: url(${selectedBg});`">
-      <p class="im-fell-english-regular inner-content" :style="`font-size:${fontSize}rem;color:${textColor}`">
+      <p class="im-fell-english-regular inner-content" :data-text="origonalContent"
+        :style="`font-size:${fontSize}rem;color:${textColor}`">
         {{ translatedContent }}
       </p>
       <div class="avatar" :style="`background-image: url(${avatar});`" @click="onUploadAvatar">
@@ -314,6 +315,18 @@ const onAvatarChange = e => {
 
 .inner-content {
   margin-left: 5rem;
+  white-space: pre;
+}
+
+.inner-content::after {
+  content: attr(data-text);
+  display: block;
+  font-size: 60%;
+  text-align: center;
+}
+
+.inner-content::first-letter {
+  font-size: 180%;
 }
 
 .avatar {
