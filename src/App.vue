@@ -212,7 +212,8 @@ const onAvatarChange = e => {
       </div>
       <div style="margin-left: 1rem;" class="operate-pane-item">
         <label for="fontSize">font size:</label>
-        <input type="range" name="fontSize" id="fontSize" v-model="fontSize" min="1" max="10" @change="onFontSizeChange">
+        <input type="range" name="fontSize" id="fontSize" v-model="fontSize" min="1" max="10" step="0.2"
+          @change="onFontSizeChange">
         <label>{{ fontSize }}</label>
       </div>
       <div style="margin-left: 1rem;" class="operate-pane-item">
