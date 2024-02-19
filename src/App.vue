@@ -131,6 +131,10 @@ watchEffect(() => {
   TO.value = to;
 })
 
+watchEffect(() => {
+  translatedContent.value = origonalContent.value;
+})
+
 const fetchTranslate = () => {
   if (!origonalContent.value) {
     return alert('Please type in something')
