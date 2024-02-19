@@ -281,6 +281,9 @@ const onAvatarChange = e => {
 
 #language {
   margin-left: 1rem;
+  width: 10rem;
+  padding: 0.4rem;
+  border-radius: 0.4rem;
 }
 
 .quote-input {
