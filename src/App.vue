@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
-import axios from 'axios';
 // @ts-ignore
 import CryptoJS from 'crypto-js';
 // @ts-ignore
@@ -19,6 +18,33 @@ import flowerWall from './assets/flower-wall.jpeg'
 import pinkWall from './assets/pink-wall.jpeg'
 import avatarPic from './assets/avatar.png';
 
+function jsonp(url: string, callbackName: string) {
+  return new Promise((resolve, reject) => {
+    // 创建全局回调函数
+    // @ts-ignore
+    window[callbackName] = function (data) {
+      resolve(data);
+      // 清理
+      document.body.removeChild(script);
+      // @ts-ignore
+      delete window[callbackName];
+    };
+
+    // 创建 script 标签并添加到页面
+    const script = document.createElement('script');
+    script.src = `${url}&callback=${callbackName}`;
+    document.body.appendChild(script);
+
+    // 设置超时处理
+    script.onerror = function () {
+      reject(new Error(`JSONP request to ${url} failed`));
+      // 清理
+      document.body.removeChild(script);
+      // @ts-ignore
+      delete window[callbackName];
+    };
+  });
+}
 const bgList = [
   {
     bg: blackSmoke,
@@ -110,9 +136,10 @@ const fetchTranslate = () => {
     return alert('Please type in something')
   }
 
-  axios.get(`https://api.fanyi.baidu.com/api/trans/vip/translate/api${queryStr()}`,
+  jsonp(`https://api.fanyi.baidu.com/api/trans/vip/translate/api${queryStr()}`, 'callback'
   ).then(res => {
-    translatedContent.value = res.data.trans_result[0].dst;
+    // @ts-ignore
+    translatedContent.value = res.trans_result[0].dst;
   })
 
 }

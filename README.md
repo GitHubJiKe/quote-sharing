@@ -3,8 +3,8 @@
 ## Thanks
 - Vue3 + TS
 - Vite
-- Axios
 - Baidu Translate API
+- JSONP
 - html2canvas
 - crypto-js
 
