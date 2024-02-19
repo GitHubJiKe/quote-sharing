@@ -8,5 +8,8 @@ export default defineConfig({
     proxy: {
       '/api': 'http://api.fanyi.baidu.com/api/trans/vip/translate'
     }
+  },
+  build: {
+    outDir: 'docs'
   }
 });
