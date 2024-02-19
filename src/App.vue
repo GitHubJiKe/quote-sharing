@@ -5,7 +5,7 @@ import axios from 'axios';
 import CryptoJS from 'crypto-js';
 // @ts-ignore
 import html2canvas from 'html2canvas';
-
+import fanyiConf from '../fanyi.json'
 import blackSmoke from './assets/black-smoke.jpeg'
 import blueWall from './assets/blue-wall.jpeg'
 import brickWall from './assets/brick-wall.jpeg'
@@ -17,6 +17,7 @@ import yellowWall from './assets/yellow-wall.jpeg'
 import whiteBlueBrick from './assets/white-blue-brick.jpeg'
 import flowerWall from './assets/flower-wall.jpeg'
 import pinkWall from './assets/pink-wall.jpeg'
+import avatarPic from './assets/avatar.png';
 
 const bgList = [
   {
@@ -74,8 +75,9 @@ const languageList = [
     value: 'en|zh'
   }
 ]
-const APP_ID = '20240219001966997'
-const SECRET = 'wihILJ4pkBH6h1aQg3rK'
+
+const APP_ID = fanyiConf.APPID
+const SECRET = fanyiConf.SECRET
 const FROM = ref('zh'), TO = ref('en');
 const translatedContent = ref('')
 const origonalContent = ref('')
@@ -84,9 +86,7 @@ const selectedBg = ref(blackSmoke);
 const fontSize = ref('4')
 const textColor = ref('white');
 const language = ref('zh|en');
-const avatar = ref('');
-
-axios.defaults.withCredentials = true;
+const avatar = ref(avatarPic);
 
 const createSign = () => {
   const signStr = APP_ID + origonalContent.value + salt + SECRET;
