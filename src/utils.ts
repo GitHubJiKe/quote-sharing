@@ -76,3 +76,69 @@ export function exportPic(ele: HTMLDivElement) {
         downloadLink.click();
     });
 }
+
+export function dragFunc(draggable: HTMLElement) {
+    // 获取需要拖拽的元素及其父元素
+    let container = draggable.parentNode!;
+    // 初始化用于存储鼠标开始拖拽时的坐标
+    let startX: number, startY: number;
+
+    // 鼠标按下事件
+    draggable.addEventListener('mousedown', function (e) {
+        // 获取鼠标在页面中的位置，并记录下来
+        startX = e.clientX;
+        startY = e.clientY;
+
+        // 监听鼠标移动事件
+        document.addEventListener('mousemove', mouseMove);
+
+        // 监听鼠标松开事件
+        document.addEventListener('mouseup', mouseUp);
+    });
+
+    // 鼠标移动事件
+    function mouseMove(e: { clientX: number; clientY: number; }) {
+        // 计算鼠标的新位置与初始位置的差值
+        let deltaX = e.clientX - startX;
+        let deltaY = e.clientY - startY;
+
+        // 计算元素的新位置
+        let newLeft = draggable.offsetLeft + deltaX;
+        let newTop = draggable.offsetTop + deltaY;
+
+        // 获取父元素的宽度和高度
+        // @ts-ignore
+        let containerWidth = container.clientWidth;
+        // @ts-ignore
+        let containerHeight = container.clientHeight;
+        // 获取可拖拽元素的宽度和高度
+        let draggableWidth = draggable.offsetWidth;
+        let draggableHeight = draggable.offsetHeight;
+
+        // 确保元素不会移出父元素的左边界
+        newLeft = Math.max(newLeft, 0);
+        // 确保元素不会移出父元素的右边界
+        newLeft = Math.min(newLeft, containerWidth - draggableWidth);
+
+        // 确保元素不会移出父元素的上边界
+        newTop = Math.max(newTop, 0);
+        // 确保元素不会移出父元素的下边界
+        newTop = Math.min(newTop, containerHeight - draggableHeight);
+
+        // 设置元素的新位置
+        draggable.style.left = newLeft + 'px';
+        draggable.style.top = newTop + 'px';
+
+        // 更新鼠标的开始位置
+        startX = e.clientX;
+        startY = e.clientY;
+    }
+
+    // 鼠标松开事件
+    function mouseUp() {
+        // 移除鼠标移动和松开事件的监听
+        document.removeEventListener('mousemove', mouseMove);
+        document.removeEventListener('mouseup', mouseUp);
+    }
+
+}

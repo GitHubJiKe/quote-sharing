@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, } from 'vue';
+import { computed, onMounted, ref, } from 'vue';
 import { fontFalimies, aligns, languageList, bgImgList } from './constants';
-import { fetchTranslate, exportPic } from './utils'
+import { fetchTranslate, exportPic, dragFunc } from './utils'
 import { watchThrottled } from '@vueuse/core'
 interface PreviewStyleConf {
     color: string;
@@ -15,8 +15,9 @@ interface PreviewStyleConf {
     language: 'zh|en' | 'en|zh' | '|'
 }
 
-const txt = ref('Welcome Sharing Quotes!')
+const txt = ref('Share your favorite quotes to everyone!')
 const subTxt = ref(txt.value);
+const authorName = ref('Peter Yuan');
 const previewStyleConf = ref<PreviewStyleConf>({
     color: '#000',
     fontSize: 80,
@@ -25,8 +26,8 @@ const previewStyleConf = ref<PreviewStyleConf>({
     padding: 24,
     textAlign: 'center',
     vertical: 'center',
-    fontFamily: 'regular',
-    language: '|'
+    fontFamily: 'italic',
+    language: 'en|zh'
 })
 
 
@@ -60,6 +61,10 @@ const translate = async () => {
         subTxt.value = txt.value;
     }
 }
+onMounted(() => {
+    dragFunc(document.querySelector('.authorName')!)
+    translate()
+})
 
 
 watchThrottled(txt, translate, { throttle: 2000 })
@@ -123,6 +128,10 @@ const showSubTxt = computed(() => {
                         </option>
                     </select>
                 </div>
+                <div>
+                    <label for="authorName">author:</label>
+                    <input id="authorName" type="text" v-model="authorName">
+                </div>
 
                 <div class="last-button">
                     <button type="button" @click="onDownloadPic">Download Picture</button>
@@ -139,6 +148,10 @@ const showSubTxt = computed(() => {
                         {{ subTxt }}
                     </div>
                 </div>
+                <label v-show="authorName" class="authorName" :class="getTxtClass()"
+                    :style="`color: ${previewStyleConf.color};font-size:${previewStyleConf.fontSize / 2.5}px`">
+                    {{ authorName }}
+                </label>
             </div>
 
         </div>
@@ -195,6 +208,7 @@ const showSubTxt = computed(() => {
             .last-button {
                 grid-column-start: 5;
             }
+
         }
 
         .preview {
@@ -206,6 +220,23 @@ const showSubTxt = computed(() => {
             background-position: center;
             background-size: 100%;
             background-origin: padding-box;
+            position: relative;
+            user-select: none;
+
+            .authorName {
+                font-size: 30px;
+                cursor: grab;
+                position: absolute;
+                bottom: 30px;
+                right: 30px;
+            }
+
+            .authorName::before {
+                content: "——";
+                display: inline-block;
+                margin-right: 12px;
+                resize: both;
+            }
 
             .main-txt {
                 text-align: center;
