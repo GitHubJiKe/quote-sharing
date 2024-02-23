@@ -15,7 +15,7 @@ interface PreviewStyleConf {
     language: 'zh|en' | 'en|zh' | '|'
 }
 
-const txt = ref('Share your favorite quotes to everyone!')
+const txt = ref('Sharing your favorite quotes to everyone!')
 const subTxt = ref(txt.value);
 const authorName = ref('Peter Yuan');
 const previewStyleConf = ref<PreviewStyleConf>({
