@@ -9,9 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vueuse/core": "^10.7.2",
+    "@vueuse/core": "^10.8.0",
     "crypto-js": "^4.2.0",
     "html2canvas": "^1.4.1",
+    "unsplash-js": "^7.0.19",
     "vue": "^3.4.15"
   },
   "devDependencies": {
