@@ -1,13 +1,15 @@
 # Quote Sharing
 
 ## Thanks
-- Vue3 + TS
-- Vite
-- Baidu Translate API
-- JSONP
-- html2canvas
-- crypto-js
+
+-   Vue3 + TS
+-   Vite
+-   Baidu Translate API
+-   JSONP
+-   html2canvas
+-   Unsplash API
+-   crypto-js
 
 ## DEMO
 
-![一图胜千言](./一图胜千言.png)
+![Quote Sharing](./QuoteSharing.png)
