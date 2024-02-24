@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import Loading from "./Loading.vue";
-
-import { fontFalimies, aligns, languageList } from "./constants";
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
+import { fontFalimies, aligns, languageList, driverSteps } from "./constants";
 import {
     fetchTranslate,
     exportPic,
@@ -24,6 +25,8 @@ interface PreviewStyleConf {
     language: "zh|en" | "en|zh" | "|";
 }
 
+let showedDriver = localStorage.getItem("Showed_Driver") || false;
+
 const txt = ref("Sharing your favorite quotes to everyone!");
 const subTxt = ref(txt.value);
 const authorName = ref("Peter Yuan");
@@ -32,7 +35,7 @@ const bgImages = ref([]);
 const loadingShown = ref(false);
 const previewStyleConf = ref<PreviewStyleConf>({
     color: "#000",
-    fontSize: 52,
+    fontSize: 60,
     bgColor: "#efede9",
     bgImage: "",
     padding: 24,
@@ -81,6 +84,15 @@ onMounted(() => {
     fetchBgPic();
     dragFunc(document.querySelector(".authorName")!);
     translate();
+    if (!showedDriver || showedDriver !== "true") {
+        const driverObj = driver({
+            showButtons: ["next", "previous", "close"],
+            // @ts-ignore
+            steps: driverSteps,
+        });
+        driverObj.drive();
+        localStorage.setItem("Showed_Driver", "true");
+    }
 });
 
 watchThrottled(txt, translate, { throttle: 2000 });
@@ -143,11 +155,11 @@ const refreshBgImage = () => {
 
 <template>
     <div class="quote-sharing">
-        <div class="title"></div>
-        <div class="content">
+        <div class="title" id="first"></div>
+        <div class="content" id="second">
             <Loading v-if="loadingShown"></Loading>
             <div class="conf">
-                <div>
+                <!-- <div>
                     <label for="bgColor">background:</label>
                     <input
                         type="color"
@@ -155,10 +167,11 @@ const refreshBgImage = () => {
                         id="bgColor"
                         v-model="previewStyleConf.bgColor"
                     />
-                </div>
+                </div> -->
                 <div>
                     <label for="bgImage">bg pic:</label>
                     <input
+                        id="bgImage"
                         type="text"
                         v-model="previewStyleConf.bgSearchKeyWord"
                     />
@@ -171,6 +184,7 @@ const refreshBgImage = () => {
                         name="color"
                         id="color"
                         v-model="previewStyleConf.color"
+                        style="width: 147px"
                     />
                 </div>
                 <div>
@@ -184,7 +198,7 @@ const refreshBgImage = () => {
                         max="100"
                         step="2"
                     />
-                    <label>{{ previewStyleConf.fontSize }}</label>
+                    <em>{{ previewStyleConf.fontSize }}</em>
                 </div>
                 <div>
                     <label for="fontFamily">font family:</label>
@@ -203,7 +217,7 @@ const refreshBgImage = () => {
                     </select>
                 </div>
                 <div>
-                    <label for="textAlign">textAlign:</label>
+                    <label for="textAlign">text align:</label>
                     <select
                         name="textAlign"
                         id="textAlign"
@@ -240,19 +254,25 @@ const refreshBgImage = () => {
                 </div>
 
                 <div class="last-button">
-                    <button type="button" @click="onDownloadPic">
+                    <button
+                        type="button"
+                        id="downloadBtn"
+                        @click="onDownloadPic"
+                    >
                         Download Picture
                     </button>
                 </div>
             </div>
             <textarea
+                id="textarea"
                 placeholder="Typein something and press Key Enter"
                 v-model="txt"
             ></textarea>
             <div
                 class="refresh-icon"
                 @click="refreshBgImage"
-                v-if="bgImages.length"
+                v-show="bgImages.length"
+                id="refreshIcon"
             >
                 <svg
                     t="1708748137868"
@@ -274,7 +294,11 @@ const refreshBgImage = () => {
                     ></path>
                 </svg>
             </div>
-            <div class="preview" :style="generatePreviewStyleObj()">
+            <div
+                class="preview"
+                :style="generatePreviewStyleObj()"
+                id="preview"
+            >
                 <div>
                     <div class="main-txt" :class="getTxtClass()">
                         {{ txt }}
@@ -289,6 +313,7 @@ const refreshBgImage = () => {
                     </div>
                 </div>
                 <label
+                    id="author"
                     v-show="authorName"
                     class="authorName"
                     :class="getTxtClass()"
@@ -354,10 +379,15 @@ const refreshBgImage = () => {
                     width: 100px;
                     text-align: right;
                 }
+                select {
+                    width: 147px;
+                }
             }
 
             .last-button {
                 grid-column-start: 3;
+                display: flex;
+                justify-content: flex-end;
             }
         }
         .refresh-icon {
