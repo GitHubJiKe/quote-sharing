@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import Loading from "./Loading.vue";
-import { driver } from "driver.js";
-import "driver.js/dist/driver.css";
-import { fontFalimies, aligns, languageList, driverSteps } from "./constants";
+import {
+    fontFalimies,
+    aligns,
+    languageList,
+    labelsLanguageMap,
+    layouts,
+} from "./constants";
 import {
     fetchTranslate,
     exportPic,
@@ -12,6 +16,11 @@ import {
     loadImage,
 } from "./utils";
 import { watchThrottled } from "@vueuse/core";
+/**
+ * TODO:
+ * 1. 中英文翻译
+ * 2. 布局提供三种选择
+ */
 interface PreviewStyleConf {
     color: string;
     fontSize: number;
@@ -24,8 +33,6 @@ interface PreviewStyleConf {
     fontFamily: "regular" | "italic";
     language: "zh|en" | "en|zh" | "|";
 }
-
-let showedDriver = localStorage.getItem("Showed_Driver") || false;
 
 const txt = ref("Sharing your favorite quotes to everyone!");
 const subTxt = ref(txt.value);
@@ -45,6 +52,10 @@ const previewStyleConf = ref<PreviewStyleConf>({
     language: "en|zh",
     bgSearchKeyWord: "pure color",
 });
+
+const curLang = ref<"zh" | "en">("zh");
+
+const curLayout = ref("left|right");
 
 const generatePreviewStyleObj = () => {
     const { color, bgColor, fontSize, padding, textAlign, vertical, bgImage } =
@@ -84,16 +95,9 @@ onMounted(() => {
     fetchBgPic();
     dragFunc(document.querySelector(".authorName")!);
     translate();
-    if (!showedDriver || showedDriver !== "true") {
-        const driverObj = driver({
-            showButtons: ["next", "previous", "close"],
-            // @ts-ignore
-            steps: driverSteps,
-        });
-        driverObj.drive();
-        localStorage.setItem("Showed_Driver", "true");
-    }
 });
+
+const onTarnslateChange = () => translate();
 
 watchThrottled(txt, translate, { throttle: 2000 });
 
@@ -151,34 +155,88 @@ const refreshBgImage = () => {
             bgImages.value[bgImageIndex.value].urls.full;
     }
 };
+
+const layoutStyle = computed(() => {
+    if (curLayout.value === "left|right") {
+        return "flex-direction:row";
+    }
+    if (curLayout.value === "right|left") {
+        return "flex-direction:row-reverse";
+    }
+    return "";
+});
+
+const labelMap = computed(() => {
+    return labelsLanguageMap[curLang.value];
+});
 </script>
 
 <template>
-    <div class="quote-sharing">
-        <div class="title" id="first"></div>
+    <div class="quote-sharing" :style="layoutStyle">
+        <div class="title" id="first" v-if="curLayout !== 'fullscreen'"></div>
         <div class="content" id="second">
             <Loading v-if="loadingShown"></Loading>
             <div class="conf">
-                <!-- <div>
-                    <label for="bgColor">background:</label>
-                    <input
-                        type="color"
-                        name="bgColor"
-                        id="bgColor"
-                        v-model="previewStyleConf.bgColor"
-                    />
-                </div> -->
                 <div>
-                    <label for="bgImage">bg pic:</label>
+                    <label for="layout">{{ labelMap["layout"] }}</label>
+                    <select name="layout" id="layout" v-model="curLayout">
+                        <option
+                            :value="item.value"
+                            v-for="item in layouts"
+                            :key="item.value"
+                        >
+                            {{ item[curLang] }}
+                        </option>
+                    </select>
+                </div>
+                <div>
+                    <label for="lang">{{ labelMap["language"] }}</label>
+                    <select name="lang" id="lang" v-model="curLang">
+                        <option value="zh">中文</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="bgImage">
+                        {{ labelMap["backgroundImage"] }}
+                    </label>
                     <input
                         id="bgImage"
                         type="text"
                         v-model="previewStyleConf.bgSearchKeyWord"
                     />
-                    <button @click="fetchBgPic">search</button>
+                    <button @click="fetchBgPic" style="width: 60px">
+                        {{ labelMap["search"] }}
+                    </button>
+                    <div
+                        class="refresh-icon"
+                        @click="refreshBgImage"
+                        v-show="bgImages.length"
+                        id="refreshIcon"
+                    >
+                        <svg
+                            t="1708748137868"
+                            class="icon"
+                            viewBox="0 0 1024 1024"
+                            version="1.1"
+                            xmlns="http://www.w3.org/2000/svg"
+                            p-id="1680"
+                            id="mx_n_1708748137868"
+                            data-spm-anchor-id="a313x.search_index.0.i6.676a3a81xaxbWH"
+                            width="30"
+                            height="30"
+                        >
+                            <path
+                                d="M733.04 379.104a264.112 264.112 0 0 0-468.112 41.76 14.336 14.336 0 0 1-17.968 8.16l-20.256-7.008a12.352 12.352 0 0 1-7.456-16.192 312.112 312.112 0 0 1 556.736-48.56l12.704-44.352a16 16 0 0 1 7.632-9.584l24.752-13.712a14.464 14.464 0 0 1 20.912 16.64l-38.128 132.96a11.136 11.136 0 0 1-13.76 7.632l-132.96-38.128a14.464 14.464 0 0 1-3.04-26.56l24.752-13.712a16 16 0 0 1 12.16-1.392l42.032 12.048z m-447.52 280.352a264.112 264.112 0 0 0 468.112-41.76 14.336 14.336 0 0 1 17.968-8.16l20.256 7.008a12.352 12.352 0 0 1 7.44 16.176c-46.368 118.032-160.8 199.072-290.432 199.072-110.96 0-210.768-59.296-266.304-150.432l-12.704 44.288a16 16 0 0 1-7.616 9.584l-24.752 13.712a14.464 14.464 0 0 1-20.928-16.64l38.128-132.96a11.136 11.136 0 0 1 13.76-7.632l132.976 38.128a14.464 14.464 0 0 1 3.04 26.56l-24.768 13.712a16 16 0 0 1-12.16 1.392l-42.016-12.048z"
+                                p-id="1681"
+                                data-spm-anchor-id="a313x.search_index.0.i8.676a3a81xaxbWH"
+                                class=""
+                            ></path>
+                        </svg>
+                    </div>
                 </div>
                 <div>
-                    <label for="color">text color:</label>
+                    <label for="color">{{ labelMap["textColor"] }}</label>
                     <input
                         type="color"
                         name="color"
@@ -188,7 +246,7 @@ const refreshBgImage = () => {
                     />
                 </div>
                 <div>
-                    <label for="fontSize">font size:</label>
+                    <label for="fontSize">{{ labelMap["fontSize"] }}</label>
                     <input
                         type="range"
                         name="fontSize"
@@ -201,7 +259,7 @@ const refreshBgImage = () => {
                     <em>{{ previewStyleConf.fontSize }}</em>
                 </div>
                 <div>
-                    <label for="fontFamily">font family:</label>
+                    <label for="fontFamily">{{ labelMap["fontFamily"] }}</label>
                     <select
                         name="fontFamily"
                         id="fontFamily"
@@ -210,46 +268,47 @@ const refreshBgImage = () => {
                         <option
                             :value="item.value"
                             v-for="item in fontFalimies"
-                            :key="item.name"
+                            :key="item[curLang]"
                         >
-                            {{ item.name }}
+                            {{ item[curLang] }}
                         </option>
                     </select>
                 </div>
                 <div>
-                    <label for="textAlign">text align:</label>
+                    <label for="textAlign">{{ labelMap["textAlign"] }}</label>
                     <select
                         name="textAlign"
                         id="textAlign"
                         v-model="previewStyleConf.textAlign"
                     >
                         <option
-                            :value="item"
+                            :value="item.value"
                             v-for="item in aligns"
-                            :key="item"
+                            :key="item[curLang]"
                         >
-                            {{ item }}
+                            {{ item[curLang] }}
                         </option>
                     </select>
                 </div>
                 <div>
-                    <label for="language">language:</label>
+                    <label for="translate">{{ labelMap["translate"] }}</label>
                     <select
-                        name="language"
-                        id="language"
+                        name="translate"
+                        id="translate"
                         v-model="previewStyleConf.language"
+                        @change="onTarnslateChange"
                     >
                         <option
                             :value="item.value"
                             v-for="item in languageList"
-                            :key="item.name"
+                            :key="item[curLang]"
                         >
-                            {{ item.name }}
+                            {{ item[curLang] }}
                         </option>
                     </select>
                 </div>
                 <div>
-                    <label for="authorName">author:</label>
+                    <label for="authorName">{{ labelMap["author"] }}</label>
                     <input id="authorName" type="text" v-model="authorName" />
                 </div>
 
@@ -259,7 +318,7 @@ const refreshBgImage = () => {
                         id="downloadBtn"
                         @click="onDownloadPic"
                     >
-                        Download Picture
+                        {{ labelMap["download"] }}
                     </button>
                 </div>
             </div>
@@ -268,32 +327,7 @@ const refreshBgImage = () => {
                 placeholder="Typein something and press Key Enter"
                 v-model="txt"
             ></textarea>
-            <div
-                class="refresh-icon"
-                @click="refreshBgImage"
-                v-show="bgImages.length"
-                id="refreshIcon"
-            >
-                <svg
-                    t="1708748137868"
-                    class="icon"
-                    viewBox="0 0 1024 1024"
-                    version="1.1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    p-id="1680"
-                    id="mx_n_1708748137868"
-                    data-spm-anchor-id="a313x.search_index.0.i6.676a3a81xaxbWH"
-                    width="30"
-                    height="30"
-                >
-                    <path
-                        d="M733.04 379.104a264.112 264.112 0 0 0-468.112 41.76 14.336 14.336 0 0 1-17.968 8.16l-20.256-7.008a12.352 12.352 0 0 1-7.456-16.192 312.112 312.112 0 0 1 556.736-48.56l12.704-44.352a16 16 0 0 1 7.632-9.584l24.752-13.712a14.464 14.464 0 0 1 20.912 16.64l-38.128 132.96a11.136 11.136 0 0 1-13.76 7.632l-132.96-38.128a14.464 14.464 0 0 1-3.04-26.56l24.752-13.712a16 16 0 0 1 12.16-1.392l42.032 12.048z m-447.52 280.352a264.112 264.112 0 0 0 468.112-41.76 14.336 14.336 0 0 1 17.968-8.16l20.256 7.008a12.352 12.352 0 0 1 7.44 16.176c-46.368 118.032-160.8 199.072-290.432 199.072-110.96 0-210.768-59.296-266.304-150.432l-12.704 44.288a16 16 0 0 1-7.616 9.584l-24.752 13.712a14.464 14.464 0 0 1-20.928-16.64l38.128-132.96a11.136 11.136 0 0 1 13.76-7.632l132.976 38.128a14.464 14.464 0 0 1 3.04 26.56l-24.768 13.712a16 16 0 0 1-12.16 1.392l-42.016-12.048z"
-                        p-id="1681"
-                        data-spm-anchor-id="a313x.search_index.0.i8.676a3a81xaxbWH"
-                        class=""
-                    ></path>
-                </svg>
-            </div>
+
             <div
                 class="preview"
                 :style="generatePreviewStyleObj()"
@@ -341,42 +375,44 @@ const refreshBgImage = () => {
         background-size: 100%;
         background-origin: padding-box;
         height: 100vh;
-        width: 30%;
-        min-width: 30%;
+        width: 20%;
+        min-width: 20%;
     }
 
     .content {
+        width: 100%;
         height: 100vh;
-        border-left: 1px dashed #6b706f;
-        padding: 0 20px;
+        padding: 0 12px;
         display: flex;
         flex-direction: column;
 
         textarea {
-            height: 80px;
+            height: 40px;
             resize: none;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             font-size: 16px;
-            padding: 4px;
+            padding: 6px;
+            border-radius: 6px;
         }
 
         .conf {
-            margin-top: 20px;
+            border-radius: 6px;
+            margin-top: 12px;
             flex: 2;
             background-color: #d4dae8;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            padding: 20px;
-            grid-template-rows: repeat(2, 1fr);
-
+            padding: 12px;
+            grid-template-rows: repeat(3, 1fr);
+            position: relative;
             div {
                 display: flex;
-                gap: 4px;
+                gap: 6px;
                 align-items: center;
                 label {
                     display: block;
-                    width: 100px;
+                    width: 140px;
                     text-align: right;
                 }
                 select {
@@ -393,20 +429,16 @@ const refreshBgImage = () => {
         .refresh-icon {
             width: 30px;
             height: 30px;
-            position: absolute;
             cursor: pointer;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
         }
         .preview {
             flex: 8;
             background-color: #efede9;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             display: flex;
             background-repeat: no-repeat;
             background-position: center;
-            background-size: 100%;
+            background-size: 100% 100%;
             background-origin: padding-box;
             position: relative;
             user-select: none;
