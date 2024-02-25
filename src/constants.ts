@@ -81,3 +81,16 @@ export const layouts = [
         zh: "全屏布局",
     },
 ];
+
+export const refreshLabels = [
+    {
+        zh: "上一张",
+        en: "Previous",
+        value: "prev",
+    },
+    {
+        zh: "下一张",
+        en: "Next",
+        value: "next",
+    },
+];
