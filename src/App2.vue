@@ -18,8 +18,11 @@ import {
 import { watchThrottled } from "@vueuse/core";
 /**
  * TODO:
- * 1. 中英文翻译
- * 2. 布局提供三种选择
+ * 1. 中英文翻译 DONE
+ * 2. 布局提供三种选择 DONE
+ * 3. 上传背景图 ？PASS
+ * 4. 自由画板，调整大小
+ * 5. 移动端？+ 微信API：直接分享朋友圈？PASS
  */
 interface PreviewStyleConf {
     color: string;
