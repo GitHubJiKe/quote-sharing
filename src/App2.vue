@@ -7,6 +7,7 @@ import {
     languageList,
     labelsLanguageMap,
     layouts,
+    refreshLabels,
 } from "./constants";
 import {
     fetchTranslate,
@@ -16,6 +17,7 @@ import {
     loadImage,
 } from "./utils";
 import { watchThrottled } from "@vueuse/core";
+import { throttle } from "lodash-es";
 /**
  * TODO:
  * 1. 中英文翻译 DONE
@@ -60,25 +62,6 @@ const curLang = ref<"zh" | "en">("zh");
 
 const curLayout = ref("left|right");
 
-const generatePreviewStyleObj = () => {
-    const { color, bgColor, fontSize, padding, textAlign, vertical, bgImage } =
-        previewStyleConf.value;
-    return {
-        color,
-        "background-color": bgColor,
-        "background-image": `url(${bgImage})`,
-        "font-size": `${fontSize}px`,
-        padding: `${padding}px`,
-        "align-items": vertical,
-        "justify-content": textAlign,
-    };
-};
-
-const getTxtClass = () =>
-    previewStyleConf.value.fontFamily === "italic"
-        ? "im-fell-english-regular-italic"
-        : "im-fell-english-regular";
-
 const translate = async () => {
     const [from, to] = previewStyleConf.value.language.split("|");
     if (from && to) {
@@ -94,6 +77,7 @@ const translate = async () => {
         subTxt.value = txt.value;
     }
 };
+
 onMounted(() => {
     fetchBgPic();
     dragFunc(document.querySelector(".authorName")!);
@@ -111,9 +95,6 @@ const onDownloadPic = () => {
         exportPic(preview);
     });
 };
-const showSubTxt = computed(() => {
-    return previewStyleConf.value.language !== "|";
-});
 
 const fetchBgPic = () => {
     loadingShown.value = true;
@@ -129,6 +110,7 @@ const fetchBgPic = () => {
         .then((res) => {
             // @ts-ignore
             if (res.response.results.length > 0) {
+                bgImageIndex.value = 0;
                 // @ts-ignore
                 bgImages.value = res.response?.results;
                 previewStyleConf.value.bgImage =
@@ -146,18 +128,38 @@ const fetchBgPic = () => {
         });
 };
 
-const refreshBgImage = () => {
+const _fetchBgImages = throttle(fetchBgPic);
+
+const refreshBgImage = (direction: string) => {
     if (bgImages.value.length) {
-        if (bgImageIndex.value === bgImages.value.length - 1) {
-            bgImageIndex.value = 0;
+        if (direction === "next") {
+            if (bgImageIndex.value === bgImages.value.length - 1) {
+                bgImageIndex.value = 0;
+            } else {
+                bgImageIndex.value = bgImageIndex.value + 1;
+            }
         } else {
-            bgImageIndex.value = bgImageIndex.value + 1;
+            if (bgImageIndex.value === 0) {
+                alert(
+                    `${
+                        curLang.value === "en"
+                            ? "Already is the first one"
+                            : "已经是第一张了"
+                    }`,
+                );
+            } else {
+                bgImageIndex.value = bgImageIndex.value - 1;
+            }
         }
         previewStyleConf.value.bgImage =
             // @ts-ignore
             bgImages.value[bgImageIndex.value].urls.full;
     }
 };
+
+const showSubTxt = computed(() => {
+    return previewStyleConf.value.language !== "|";
+});
 
 const layoutStyle = computed(() => {
     if (curLayout.value === "left|right") {
@@ -172,6 +174,26 @@ const layoutStyle = computed(() => {
 const labelMap = computed(() => {
     return labelsLanguageMap[curLang.value];
 });
+
+const previewStyleObj = computed(() => {
+    const { color, bgColor, fontSize, padding, textAlign, vertical, bgImage } =
+        previewStyleConf.value;
+    return {
+        color,
+        "background-color": bgColor,
+        "background-image": `url(${bgImage})`,
+        "font-size": `${fontSize}px`,
+        padding: `${padding}px`,
+        "align-items": vertical,
+        "justify-content": textAlign,
+    };
+});
+
+const txtClass = computed(() =>
+    previewStyleConf.value.fontFamily === "italic"
+        ? "im-fell-english-regular-italic"
+        : "im-fell-english-regular",
+);
 </script>
 
 <template>
@@ -207,35 +229,22 @@ const labelMap = computed(() => {
                         id="bgImage"
                         type="text"
                         v-model="previewStyleConf.bgSearchKeyWord"
+                        @change="_fetchBgImages"
                     />
-                    <button @click="fetchBgPic" style="width: 60px">
-                        {{ labelMap["search"] }}
-                    </button>
-                    <div
-                        class="refresh-icon"
-                        @click="refreshBgImage"
-                        v-show="bgImages.length"
-                        id="refreshIcon"
-                    >
-                        <svg
-                            t="1708748137868"
-                            class="icon"
-                            viewBox="0 0 1024 1024"
-                            version="1.1"
-                            xmlns="http://www.w3.org/2000/svg"
-                            p-id="1680"
-                            id="mx_n_1708748137868"
-                            data-spm-anchor-id="a313x.search_index.0.i6.676a3a81xaxbWH"
-                            width="30"
-                            height="30"
+                    <div v-show="bgImages.length">
+                        <label
+                            v-for="item in refreshLabels"
+                            :key="item.value"
+                            @click="refreshBgImage(item.value)"
+                            style="
+                                width: fit-content;
+                                color: blue;
+                                cursor: pointer;
+                            "
+                            :title="item[curLang]"
                         >
-                            <path
-                                d="M733.04 379.104a264.112 264.112 0 0 0-468.112 41.76 14.336 14.336 0 0 1-17.968 8.16l-20.256-7.008a12.352 12.352 0 0 1-7.456-16.192 312.112 312.112 0 0 1 556.736-48.56l12.704-44.352a16 16 0 0 1 7.632-9.584l24.752-13.712a14.464 14.464 0 0 1 20.912 16.64l-38.128 132.96a11.136 11.136 0 0 1-13.76 7.632l-132.96-38.128a14.464 14.464 0 0 1-3.04-26.56l24.752-13.712a16 16 0 0 1 12.16-1.392l42.032 12.048z m-447.52 280.352a264.112 264.112 0 0 0 468.112-41.76 14.336 14.336 0 0 1 17.968-8.16l20.256 7.008a12.352 12.352 0 0 1 7.44 16.176c-46.368 118.032-160.8 199.072-290.432 199.072-110.96 0-210.768-59.296-266.304-150.432l-12.704 44.288a16 16 0 0 1-7.616 9.584l-24.752 13.712a14.464 14.464 0 0 1-20.928-16.64l38.128-132.96a11.136 11.136 0 0 1 13.76-7.632l132.976 38.128a14.464 14.464 0 0 1 3.04 26.56l-24.768 13.712a16 16 0 0 1-12.16 1.392l-42.016-12.048z"
-                                p-id="1681"
-                                data-spm-anchor-id="a313x.search_index.0.i8.676a3a81xaxbWH"
-                                class=""
-                            ></path>
-                        </svg>
+                            {{ item.value === "next" ? "->" : "<-" }}
+                        </label>
                     </div>
                 </div>
                 <div>
@@ -314,7 +323,6 @@ const labelMap = computed(() => {
                     <label for="authorName">{{ labelMap["author"] }}</label>
                     <input id="authorName" type="text" v-model="authorName" />
                 </div>
-
                 <div class="last-button">
                     <button
                         type="button"
@@ -330,20 +338,15 @@ const labelMap = computed(() => {
                 placeholder="Typein something and press Key Enter"
                 v-model="txt"
             ></textarea>
-
-            <div
-                class="preview"
-                :style="generatePreviewStyleObj()"
-                id="preview"
-            >
+            <div class="preview" :style="previewStyleObj" id="preview">
                 <div>
-                    <div class="main-txt" :class="getTxtClass()">
+                    <div class="main-txt" :class="txtClass">
                         {{ txt }}
                     </div>
                     <div
                         v-if="showSubTxt"
                         class="sub-txt"
-                        :class="getTxtClass()"
+                        :class="txtClass"
                         :style="`font-size:${previewStyleConf.fontSize / 2}px`"
                     >
                         {{ subTxt }}
@@ -353,7 +356,7 @@ const labelMap = computed(() => {
                     id="author"
                     v-show="authorName"
                     class="authorName"
-                    :class="getTxtClass()"
+                    :class="txtClass"
                     :style="`color: ${previewStyleConf.color};font-size:${
                         previewStyleConf.fontSize / 2.5
                     }px`"
@@ -428,11 +431,6 @@ const labelMap = computed(() => {
                 display: flex;
                 justify-content: flex-end;
             }
-        }
-        .refresh-icon {
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
         }
         .preview {
             flex: 8;
