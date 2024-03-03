@@ -141,10 +141,9 @@ const refreshBgImage = (direction: string) => {
         } else {
             if (bgImageIndex.value === 0) {
                 alert(
-                    `${
-                        curLang.value === "en"
-                            ? "Already is the first one"
-                            : "已经是第一张了"
+                    `${curLang.value === "en"
+                        ? "Already is the first one"
+                        : "已经是第一张了"
                     }`,
                 );
             } else {
@@ -205,11 +204,7 @@ const txtClass = computed(() =>
                 <div>
                     <label for="layout">{{ labelMap["layout"] }}</label>
                     <select name="layout" id="layout" v-model="curLayout">
-                        <option
-                            :value="item.value"
-                            v-for="item in layouts"
-                            :key="item.value"
-                        >
+                        <option :value="item.value" v-for="item in layouts" :key="item.value">
                             {{ item[curLang] }}
                         </option>
                     </select>
@@ -225,96 +220,49 @@ const txtClass = computed(() =>
                     <label for="bgImage">
                         {{ labelMap["backgroundImage"] }}
                     </label>
-                    <input
-                        id="bgImage"
-                        type="text"
-                        v-model="previewStyleConf.bgSearchKeyWord"
-                        @change="_fetchBgImages"
-                    />
+                    <input id="bgImage" type="text" v-model="previewStyleConf.bgSearchKeyWord"
+                        @change="_fetchBgImages" />
                     <div v-show="bgImages.length">
-                        <label
-                            v-for="item in refreshLabels"
-                            :key="item.value"
-                            @click="refreshBgImage(item.value)"
+                        <label v-for="item in refreshLabels" :key="item.value" @click="refreshBgImage(item.value)"
                             style="
                                 width: fit-content;
                                 color: blue;
                                 cursor: pointer;
-                            "
-                            :title="item[curLang]"
-                        >
-                            {{ item.value === "next" ? "->" : "<-" }}
-                        </label>
+                            " :title="item[curLang]">
+                            {{ item.value === "next" ? "->" : "<-" }} </label>
                     </div>
                 </div>
                 <div>
                     <label for="color">{{ labelMap["textColor"] }}</label>
-                    <input
-                        type="color"
-                        name="color"
-                        id="color"
-                        v-model="previewStyleConf.color"
-                        style="width: 147px"
-                    />
+                    <input type="color" name="color" id="color" v-model="previewStyleConf.color" style="width: 147px" />
                 </div>
                 <div>
                     <label for="fontSize">{{ labelMap["fontSize"] }}</label>
-                    <input
-                        type="range"
-                        name="fontSize"
-                        id="fontSize"
-                        v-model="previewStyleConf.fontSize"
-                        min="20"
-                        max="100"
-                        step="2"
-                    />
+                    <input type="range" name="fontSize" id="fontSize" v-model="previewStyleConf.fontSize" min="20"
+                        max="100" step="2" />
                     <em>{{ previewStyleConf.fontSize }}</em>
                 </div>
                 <div>
                     <label for="fontFamily">{{ labelMap["fontFamily"] }}</label>
-                    <select
-                        name="fontFamily"
-                        id="fontFamily"
-                        v-model="previewStyleConf.fontFamily"
-                    >
-                        <option
-                            :value="item.value"
-                            v-for="item in fontFalimies"
-                            :key="item[curLang]"
-                        >
+                    <select name="fontFamily" id="fontFamily" v-model="previewStyleConf.fontFamily">
+                        <option :value="item.value" v-for="item in fontFalimies" :key="item[curLang]">
                             {{ item[curLang] }}
                         </option>
                     </select>
                 </div>
                 <div>
                     <label for="textAlign">{{ labelMap["textAlign"] }}</label>
-                    <select
-                        name="textAlign"
-                        id="textAlign"
-                        v-model="previewStyleConf.textAlign"
-                    >
-                        <option
-                            :value="item.value"
-                            v-for="item in aligns"
-                            :key="item[curLang]"
-                        >
+                    <select name="textAlign" id="textAlign" v-model="previewStyleConf.textAlign">
+                        <option :value="item.value" v-for="item in aligns" :key="item[curLang]">
                             {{ item[curLang] }}
                         </option>
                     </select>
                 </div>
                 <div>
                     <label for="translate">{{ labelMap["translate"] }}</label>
-                    <select
-                        name="translate"
-                        id="translate"
-                        v-model="previewStyleConf.language"
-                        @change="onTarnslateChange"
-                    >
-                        <option
-                            :value="item.value"
-                            v-for="item in languageList"
-                            :key="item[curLang]"
-                        >
+                    <select name="translate" id="translate" v-model="previewStyleConf.language"
+                        @change="onTarnslateChange">
+                        <option :value="item.value" v-for="item in languageList" :key="item[curLang]">
                             {{ item[curLang] }}
                         </option>
                     </select>
@@ -324,55 +272,38 @@ const txtClass = computed(() =>
                     <input id="authorName" type="text" v-model="authorName" />
                 </div>
                 <div class="last-button">
-                    <button
-                        type="button"
-                        id="downloadBtn"
-                        @click="onDownloadPic"
-                    >
+                    <button type="button" id="downloadBtn" @click="onDownloadPic">
                         {{ labelMap["download"] }}
                     </button>
                 </div>
             </div>
-            <textarea
-                id="textarea"
-                placeholder="Typein something and press Key Enter"
-                v-model="txt"
-            ></textarea>
+            <textarea id="textarea" placeholder="Typein something and press Key Enter" v-model="txt"></textarea>
             <div class="preview" :style="previewStyleObj" id="preview">
                 <div>
                     <div class="main-txt" :class="txtClass">
                         {{ txt }}
                     </div>
-                    <div
-                        v-if="showSubTxt"
-                        class="sub-txt"
-                        :class="txtClass"
-                        :style="`font-size:${previewStyleConf.fontSize / 2}px`"
-                    >
+                    <div v-if="showSubTxt" class="sub-txt" :class="txtClass"
+                        :style="`font-size:${previewStyleConf.fontSize / 2}px`">
                         {{ subTxt }}
                     </div>
                 </div>
-                <label
-                    id="author"
-                    v-show="authorName"
-                    class="authorName"
-                    :class="txtClass"
-                    :style="`color: ${previewStyleConf.color};font-size:${
-                        previewStyleConf.fontSize / 2.5
-                    }px`"
-                >
+                <label id="author" v-show="authorName" class="authorName" :class="txtClass" :style="`color: ${previewStyleConf.color};font-size:${previewStyleConf.fontSize / 2.5
+        }px`">
                     {{ authorName }}
                 </label>
             </div>
         </div>
     </div>
 </template>
+
 <style lang="less" scoped>
 .quote-sharing {
     display: flex;
     flex-direction: row;
     align-items: center;
     height: 100vh;
+    background-color: #e9e5ca;
 
     .title {
         background-image: url(./title.svg);
@@ -412,15 +343,18 @@ const txtClass = computed(() =>
             padding: 12px;
             grid-template-rows: repeat(3, 1fr);
             position: relative;
+
             div {
                 display: flex;
                 gap: 6px;
                 align-items: center;
+
                 label {
                     display: block;
                     width: 140px;
                     text-align: right;
                 }
+
                 select {
                     width: 147px;
                 }
@@ -432,6 +366,7 @@ const txtClass = computed(() =>
                 justify-content: flex-end;
             }
         }
+
         .preview {
             flex: 8;
             background-color: #efede9;

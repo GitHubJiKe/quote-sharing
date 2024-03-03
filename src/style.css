@@ -8,25 +8,75 @@ body,
 } */
 html,
 body {
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden;
-  padding: 0;
-  margin: 0;
-  border: none;
-  background-color: #e9e5ca;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    padding: 0;
+    margin: 0;
+    border: none;
 }
 
-#app {}
+#app {
+    height: 100%;
+}
 
 .im-fell-english-regular {
-  font-family: "IM Fell English", serif;
-  font-weight: 400;
-  font-style: normal;
+    font-family: "IM Fell English", serif;
+    font-weight: 400;
+    font-style: normal;
 }
 
 .im-fell-english-regular-italic {
-  font-family: "IM Fell English", serif;
-  font-weight: 400;
-  font-style: italic;
+    font-family: "IM Fell English", serif;
+    font-weight: 400;
+    font-style: italic;
+}
+
+/* 在线链接服务仅供平台体验和调试使用，平台不承诺服务的稳定性，企业客户需下载字体包自行发布使用并做好备份。 */
+@font-face {
+    font-family: "iconfont"; /* Project id 4451165 */
+    src: url("//at.alicdn.com/t/c/font_4451165_dtblq7imxfk.woff2?t=1709447672862")
+            format("woff2"),
+        url("//at.alicdn.com/t/c/font_4451165_dtblq7imxfk.woff?t=1709447672862")
+            format("woff"),
+        url("//at.alicdn.com/t/c/font_4451165_dtblq7imxfk.ttf?t=1709447672862")
+            format("truetype");
+}
+.iconfont {
+    font-family: "iconfont" !important;
+    font-size: 16px;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-dot:before {
+    content: "\e65e";
+}
+
+.icon-eraser:before {
+    content: "\e71c";
+}
+
+.icon-share:before {
+    content: "\e67d";
+}
+
+.icon-computer::before {
+    content: "\e6ad";
+}
+.icon-Working::before {
+    content: "\e6fb";
+}
+.icon-bike::before {
+    content: "\e652";
+}
+.icon-running::before {
+    content: "\e995";
+}
+.icon-tea::before {
+    content: "\e6c2";
+}
+.icon-arrow::before {
+    content: "\e625";
 }

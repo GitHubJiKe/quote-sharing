@@ -4,6 +4,7 @@ import CryptoJS from "crypto-js";
 import html2canvas from "html2canvas";
 import { UNSPLASH, BAIDU_FANYI } from "../conf.json";
 import { createApi } from "unsplash-js";
+import { debounce } from "lodash-es";
 
 export const unsplash = createApi({ accessKey: UNSPLASH.ACCESS_KEY });
 
@@ -43,9 +44,9 @@ const createSign = (txt: string) => {
 const encodeQueryContent = (c: string) => encodeURIComponent(c);
 const queryStr = (txt: string, from: string, to: string) => {
     return `?q=${encodeQueryContent(
-        txt,
+        txt
     )}&from=${from}&to=${to}&appid=${APP_ID}&salt=${Date.now()}&sign=${createSign(
-        txt,
+        txt
     )}`;
 };
 export const fetchTranslate = (txt: string, from = "zh", to = "en") => {
@@ -58,9 +59,9 @@ export const fetchTranslate = (txt: string, from = "zh", to = "en") => {
             `https://api.fanyi.baidu.com/api/trans/vip/translate/api${queryStr(
                 txt,
                 from,
-                to,
+                to
             )}`,
-            "callback",
+            "callback"
         )
             .then((res) => {
                 // @ts-ignore
@@ -76,22 +77,101 @@ export const fetchTranslate = (txt: string, from = "zh", to = "en") => {
             });
     });
 };
+// // @ts-ignore
+// function getPixelRatio(context) {
+//     var backingStore =
+//         context.backingStorePixelRatio ||
+//         context.webkitBackingStorePixelRatio ||
+//         context.mozBackingStorePixelRatio ||
+//         context.msBackingStorePixelRatio ||
+//         context.oBackingStorePixelRatio ||
+//         context.backingStorePixelRatio ||
+//         1;
+//     return (window.devicePixelRatio || 1) / backingStore;
+// }
+// function scaleCanvas(ele: HTMLDivElement) {
+//     const shareContent = ele; // 需要绘制的部分的 (原生）dom 对象 ，注意容器的宽度不要使用百分比，使用固定宽度，避免缩放问题
+//     const width = shareContent.offsetWidth; // 获取(原生）dom 宽度
+//     const height = shareContent.offsetHeight; // 获取(原生）dom 高
+//     const offsetTop = shareContent.offsetTop; //元素距离顶部的偏移量
+
+//     const canvas = document.createElement("canvas"); //创建canvas 对象
+//     const context = canvas.getContext("2d")!;
+//     const scaleBy = getPixelRatio(context); //获取像素密度的方法 (也可以采用自定义缩放比例)
+//     canvas.width = width * scaleBy; //这里 由于绘制的dom 为固定宽度，居中，所以没有偏移
+//     canvas.height = (height + offsetTop) * scaleBy; // 注意高度问题，由于顶部有个距离所以要加上顶部的距离，解决图像高度偏移问题
+//     context.scale(scaleBy, scaleBy);
+//     return { canvas, scale: scaleBy };
+// }
 
 export function exportPic(ele: HTMLDivElement) {
     // 假设你想要将ID为"domElement"的DOM元素转换为图片
-    html2canvas(ele).then((canvas) => {
+    return html2canvas(ele, {
+        allowTaint: true,
+        logging: true,
+        width: ele.clientWidth,
+        height: ele.clientHeight - 2,
+    }).then((canvas) => {
         // 将canvas转换为图片
         const image = canvas.toDataURL("image/png");
 
         // 创建一个链接元素用于下载
         const downloadLink = document.createElement("a");
         downloadLink.href = image;
-        downloadLink.download = "dom-image.png";
+        downloadLink.download = "分享.png";
 
         // 触发下载
         downloadLink.click();
+        Promise.resolve("OK");
     });
 }
+
+export const genPIic2Download = (element: HTMLDivElement) => {
+    // 创建一个 Canvas 元素
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d")!;
+
+    // 设置 Canvas 尺寸为元素尺寸
+    canvas.width = element.offsetWidth;
+    canvas.height = element.offsetHeight;
+
+    // 将 DOM 元素绘制到 Canvas 上
+    const html =
+        "<svg xmlns='http://www.w3.org/2000/svg' width='" +
+        element.offsetWidth +
+        "' height='" +
+        element.offsetHeight +
+        "'>" +
+        "<foreignObject width='100%' height='100%'>" +
+        "<div xmlns='http://www.w3.org/1999/xhtml'>" +
+        element.innerHTML +
+        "</div>" +
+        "</foreignObject>" +
+        "</svg>";
+
+    const DOMURL = window.URL || window.webkitURL || window;
+    const img = new Image();
+    const svg = new Blob([html], { type: "image/svg+xml;charset=utf-8" });
+    const url = DOMURL.createObjectURL(svg);
+
+    img.onload = function () {
+        context.drawImage(img, 0, 0);
+        DOMURL.revokeObjectURL(url);
+        console.log(canvas, img);
+        // 将 Canvas 转换为 Base64 图片数据
+        const imageData = canvas.toDataURL("image/png");
+
+        // 创建一个下载链接并设置图片数据
+        const link = document.createElement("a");
+        link.href = imageData;
+        link.download = "element_image.png";
+
+        // 触发点击下载
+        link.click();
+    };
+
+    img.src = url;
+};
 
 export function dragFunc(draggable: HTMLElement) {
     // 获取需要拖拽的元素及其父元素
@@ -160,7 +240,7 @@ export function dragFunc(draggable: HTMLElement) {
 
 export function loadImage(url: string) {
     return new Promise(function (resolve, reject) {
-        var img = new Image();
+        const img = new Image();
         img.crossOrigin = "anonymous";
         img.onload = function () {
             resolve(imageToBase64(img));
@@ -173,8 +253,8 @@ export function loadImage(url: string) {
 }
 function imageToBase64(img: HTMLImageElement) {
     // 创建一个 Canvas 元素
-    var canvas = document.createElement("canvas");
-    var ctx = canvas.getContext("2d")!;
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d")!;
 
     // 设置 Canvas 元素的大小与图像大小相同
     canvas.width = img.width;
@@ -184,7 +264,26 @@ function imageToBase64(img: HTMLImageElement) {
     ctx.drawImage(img, 0, 0);
 
     // 将 Canvas 中的图像转换为 Base64 字符串
-    var base64 = canvas.toDataURL("image/jpeg"); // 指定图片格式，如 'image/png' 或 'image/jpeg'
+    const base64 = canvas.toDataURL("image/jpeg"); // 指定图片格式，如 'image/png' 或 'image/jpeg'
 
     return base64;
+}
+
+// 以1920px 底图为准开发页面
+export const setDomFontSize = (): void => {
+    let width =
+        document.documentElement.clientWidth || document.body.clientWidth;
+    let fontsize = (width <= 1200 ? 1200 : width) / 100 + "px";
+    (document.getElementsByTagName("html")[0].style as any)["font-size"] =
+        fontsize;
+};
+
+let setDomFontSizeDebounce = debounce(setDomFontSize, 400);
+window.addEventListener("resize", setDomFontSizeDebounce); // 浏览器加入收缩监听防抖，重新计算rem配置
+
+export function isMobileDevice() {
+    // 使用正则表达式匹配常见的移动设备关键词
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+    );
 }
