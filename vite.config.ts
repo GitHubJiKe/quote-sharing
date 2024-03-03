@@ -1,16 +1,29 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import postCssPxToRem from "postcss-pxtorem";
 // https://vitejs.dev/config/
+const isMobile = process.env.PLATFORM === "mobile";
 export default defineConfig({
-  plugins: [vue()],
-  server: {
-    proxy: {
-      '/api': 'http://api.fanyi.baidu.com/api/trans/vip/translate'
-    }
-  },
-  build: {
-    outDir: 'docs'
-  },
-  base: '/quote-sharing/'
+    plugins: [vue()],
+    server: {
+        proxy: {
+            "/api": "http://api.fanyi.baidu.com/api/trans/vip/translate",
+        },
+    },
+    css: {
+        postcss: {
+            plugins: isMobile
+                ? [
+                      postCssPxToRem({
+                          rootValue: 12, // 1rem的大小
+                          propList: ["*"], // 需要转换的属性，这里选择全部都进行转换
+                      }),
+                  ]
+                : [],
+        },
+    },
+    build: {
+        outDir: isMobile ? "docs/mobile" : "docs/web",
+    },
+    base: isMobile ? "/quote-sharing/mobile" : "/quote-sharing/web",
 });
