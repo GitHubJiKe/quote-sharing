@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import App2 from "./App2.vue";
-import App3 from "./App3.vue";
+import App3 from "./Mobile/App.vue";
 
 const appName = ref("App3");
 const curComponent = computed(() => {
@@ -18,3 +18,4 @@ const curComponent = computed(() => {
 </template>
 
 <style scoped></style>
+./Mobile/App3.vue./Mobile/App.vue

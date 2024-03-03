@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { VueFinalModal } from 'vue-final-modal'
-import qrcode from './qrcode.jpg';
+import qrcode from '../qrcode.jpg';
 
-defineProps<{
-    title?: string
-}>()
 
 const emit = defineEmits<{
     (e: 'confirm'): void

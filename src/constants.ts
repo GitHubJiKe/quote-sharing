@@ -203,3 +203,18 @@ export const funIcons = [
         value: "computer",
     },
 ];
+
+export const operations = [
+    {
+        name: "图标",
+        value: "icons",
+    },
+    {
+        name: "背景色",
+        value: "bgColor",
+    },
+    {
+        name: "显示/隐藏",
+        value: "visible",
+    },
+];
