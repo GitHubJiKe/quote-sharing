@@ -95,11 +95,6 @@ const { authorLineShow, datetimeStr, count, } = storeToRefs(store);
             }
         }
 
-
-
-
-
-
         .dashed-divider {
             display: flex;
             flex-direction: column;
