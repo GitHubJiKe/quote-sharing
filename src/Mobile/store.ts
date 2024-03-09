@@ -8,19 +8,11 @@ export const useMobileStore = defineStore("mobile", {
         activeTab: operations[0].value,
         currentIcon: funIcons[0].value,
         text: "点击此处输入您想分享的内容...",
+        temp: "Clean",
     }),
     getters: {
-        dividerLineShow(s) {
-            return s.visibleItems.find((v) => v.value === "divider");
-        },
-        datetimeLineShow(s) {
-            return s.visibleItems.find((v) => v.value === "datetime");
-        },
         authorLineShow(s) {
             return s.visibleItems.find((v) => v.value === "author");
-        },
-        wordsLineShow(s) {
-            return s.visibleItems.find((v) => v.value === "words");
         },
         datetimeStr() {
             return new Date().toLocaleString();

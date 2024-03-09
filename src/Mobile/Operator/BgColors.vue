@@ -21,11 +21,13 @@ const onChangeBgColor = (color: string) => {
 
 <style lang="less" scoped>
 .bg-colors {
-    display: grid;
-    grid-template-rows: 1fr;
-    grid-template-columns: repeat(60, 1fr);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     gap: 12px;
-    overflow-x: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    justify-content: space-between;
 
     .bg-color {
         border: 3px solid #fff;

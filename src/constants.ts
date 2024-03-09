@@ -156,6 +156,9 @@ export const bgcolors = [
     "linear-gradient(135deg, rgb(255, 168, 168) 10%, rgb(252, 255, 0) 100%)",
     "linear-gradient(135deg, rgb(255, 207, 113) 10%, rgb(35, 118, 221) 100%)",
     "linear-gradient(135deg, rgb(255, 150, 249) 10%, rgb(195, 43, 172) 100%)",
+    "linear-gradient(135deg, rgb(253, 235, 113) 10%, rgb(248, 216, 0) 100%)",
+    "linear-gradient(135deg, rgb(171, 220, 255) 10%, rgb(3, 150, 255) 100%)",
+    "linear-gradient(135deg, rgb(254, 182, 146) 10%, rgb(234, 84, 85) 100%)",
 ];
 
 export const visibleItems = [
@@ -191,20 +194,88 @@ export const funIcons = [
         value: "running",
     },
     {
-        name: "茶",
+        name: "品茶",
         value: "tea",
     },
     {
-        name: "工作",
+        name: "搬砖",
         value: "Working",
     },
     {
         name: "电脑",
         value: "computer",
     },
+    {
+        name: "刷剧",
+        value: "tv",
+    },
+    {
+        name: "电影",
+        value: "movie",
+    },
+    {
+        name: "美食",
+        value: "food",
+    },
+    {
+        name: "遛娃",
+        value: "childfriendly",
+    },
+    {
+        name: "甜蜜",
+        value: "love",
+    },
+    {
+        name: "地铁",
+        value: "train",
+    },
+    {
+        name: "KTV",
+        value: "sort_sing",
+    },
+    {
+        name: "亲子",
+        value: "parent-child",
+    },
+    {
+        name: "休息",
+        value: "sleep",
+    },
+    {
+        name: "飞行",
+        value: "plane",
+    },
+    {
+        name: "猫咪",
+        value: "cat",
+    },
+    {
+        name: "遛狗",
+        value: "dog",
+    },
+    {
+        name: "驾驶",
+        value: "car",
+    },
+    {
+        name: "饮料",
+        value: "Drink",
+    },
+    {
+        name: "编码",
+        value: "coding",
+    },
+    {
+        name: "写作",
+        value: "writing",
+    },
 ];
 
 export const operations = [
+    {
+        name: "模板",
+        value: "template",
+    },
     {
         name: "图标",
         value: "icons",
@@ -212,9 +283,5 @@ export const operations = [
     {
         name: "背景色",
         value: "bgColor",
-    },
-    {
-        name: "显示/隐藏",
-        value: "visible",
     },
 ];

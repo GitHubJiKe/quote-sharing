@@ -22,8 +22,8 @@ const store = useMobileStore()
         padding: 4px 12px;
         border-radius: 24px;
         color: white;
-
         font-size: 14px;
+        border: 1px solid #373538;
     }
 
     .tab-active {

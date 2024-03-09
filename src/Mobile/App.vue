@@ -6,7 +6,8 @@ import Header from './Header.vue';
 import Opeartor from "./Operator/Opeartor.vue";
 import { useMobileStore } from './store'
 import { storeToRefs } from 'pinia'
-import Template1 from './Template/Template1.vue';
+import Clean from './Template/Clean.vue';
+import Fashion from './Template/Fashion.vue';
 
 const store = useMobileStore()
 const { authorLineShow } = storeToRefs(store)
@@ -28,6 +29,7 @@ const { open, close } = useModal({
         },
     },
 })
+
 </script>
 
 <template>
@@ -35,7 +37,8 @@ const { open, close } = useModal({
         <ModalsContainer />
         <div>
             <Header @help="open" @share="onShare" />
-            <Template1 />
+            <Clean v-if="store.temp === 'Clean'" />
+            <Fashion v-if="store.temp === 'Fashion'" />
         </div>
         <Opeartor />
     </div>
@@ -79,4 +82,4 @@ const { open, close } = useModal({
     display: flex;
     justify-content: flex-start;
 }
-</style>
+</style>./Template/Clean.vue./Template/Fasion.vue

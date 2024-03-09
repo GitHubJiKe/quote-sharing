@@ -1,104 +1,48 @@
 <script setup lang="ts">
-import { useMobileStore } from '../store.ts';
-import BgColors from "./BgColors.vue";
-import VisibleItems from "./VisibleItems.vue";
-import FunIcons from "./FunIcons.vue";
-import Tabs from './Tabs.vue'
-import { ref, computed } from 'vue';
+import { ModalsContainer, useModal } from 'vue-final-modal'
+import OperatorView from './OperatorView.vue';
+import { useMobileStore } from '../store';
+
 const store = useMobileStore()
-const opened = ref(false)
-const clicked = ref(false)
-const toggle = () => {
-    opened.value = !opened.value;
-    clicked.value = true
-}
 
-const className = computed(() => {
-    if (!clicked.value) {
-        return ''
-    }
-
-    return opened.value ? 'open' : 'close'
+const { open, close, options } = useModal({
+    component: OperatorView,
+    attrs: {
+        onToggle() {
+            options.modelValue ? close() : open()
+        },
+    },
 })
 </script>
 
 <template>
-    <div class="panel" :class="className">
-        <div class="line-bar">
-            <div class="line" @click="toggle"></div>
-        </div>
-        <div v-show="opened">
-            <div class="top">
-                <Tabs />
-            </div>
-            <div class="selectors">
-                <BgColors v-show="store.activeTab === 'bgColor'" />
-                <VisibleItems v-show="store.activeTab === 'visible'" />
-                <FunIcons v-show="store.activeTab === 'icons'" />
-            </div>
-        </div>
+    <div class="panel">
+        <button @click="open" class="float-btn" :style="`background-image:${store.activeBgcolor}`">
+            <i class="iconfont icon-config"></i>
+        </button>
+        <ModalsContainer />
     </div>
 </template>
 
 <style lang="less" scoped>
-@keyframes shrink {
-    from {
-        height: 152px;
-    }
-
-    to {
-        height: 20px;
-    }
-}
-
-@keyframes unshrink {
-    from {
-        height: 20px;
-    }
-
-    to {
-        height: 152px;
-    }
-}
-
-.close {
-    animation: shrink 1s;
-}
-
-.open {
-    animation: unshrink 1s;
-}
-
 .panel {
-    background-color: #131113;
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-
-
-    .line-bar {
+    .float-btn {
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        color: #fff;
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 20px;
+        cursor: pointer;
 
-        .line {
-            width: 50px;
-            height: 3px;
-            border-radius: 8px;
-            background-color: #373538;
+        i {
+            font-size: 24px;
         }
     }
-
-    .top {
-        padding: 12px;
-    }
-
-    .selectors {
-        padding: 12px;
-        overflow-y: auto;
-    }
 }
-</style>../../constants.ts
+</style>

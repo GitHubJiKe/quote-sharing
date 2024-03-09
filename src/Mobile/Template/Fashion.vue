@@ -2,7 +2,7 @@
 import { useMobileStore } from "../store.ts";
 import { storeToRefs } from 'pinia';
 const store = useMobileStore()
-const { dividerLineShow, datetimeLineShow, authorLineShow, wordsLineShow, datetimeStr, count } = storeToRefs(store);
+const { authorLineShow, datetimeStr, count } = storeToRefs(store);
 const onTxtChange = (e: unknown) => {
     // @ts-ignore
     store.text = e?.target['innerText']
@@ -15,36 +15,21 @@ const onTxtChange = (e: unknown) => {
             <div class="header" :style="`background-image:${store.activeBgcolor}`">
                 <i class="iconfont icon" :class="`icon-${store.currentIcon}`"></i>
             </div>
-            <Transition name="custom-classes" enter-active-class="animate__animated animate__fadeIn"
-                leave-active-class="animate__animated animate__fadeOut">
-                <div class="dashed-divider" v-if="dividerLineShow?.show">
-                    <div class="dashed-line"></div>
-                </div>
-            </Transition>
-            <Transition name="custom-classes" enter-active-class="animate__animated animate__fadeIn"
-                leave-active-class="animate__animated animate__fadeOut">
-                <div class="datetime" v-if="datetimeLineShow?.show">
-                    <span>{{ datetimeStr }}</span>
-                </div>
-            </Transition>
+            <div class="dashed-divider">
+                <div class="dashed-line"></div>
+            </div>
+            <div class="datetime">
+                <span>{{ datetimeStr }}</span>
+            </div>
             <div class="texts" contenteditable @input="e => onTxtChange(e)">
                 {{ store.text }}
             </div>
-            <Transition name="custom-classes" enter-active-class="animate__animated animate__fadeIn"
-                leave-active-class="animate__animated animate__fadeOut">
-                <div class="dashed-divider" v-if="dividerLineShow?.show">
-                    <div class="dashed-line"></div>
-                </div>
-            </Transition>
+            <div class="dashed-divider">
+                <div class="dashed-line"></div>
+            </div>
             <div class="footer">
-                <Transition name="custom-classes" enter-active-class="animate__animated animate__fadeIn"
-                    leave-active-class="animate__animated animate__fadeOut">
-                    <label class="name float-left" v-show="authorLineShow?.show" contenteditable>点击输入</label>
-                </Transition>
-                <Transition name="custom-classes" enter-active-class="animate__animated animate__fadeIn"
-                    leave-active-class="animate__animated animate__fadeOut">
-                    <label class="count float-right" :data-count="count" v-show="wordsLineShow?.show">字数：</label>
-                </Transition>
+                <label class="name float-left" v-show="authorLineShow?.show" contenteditable>点击输入</label>
+                <label class="count float-right" :data-count="count">字数：</label>
             </div>
         </div>
         <div class="designer">Designed with Quote Sharing</div>
