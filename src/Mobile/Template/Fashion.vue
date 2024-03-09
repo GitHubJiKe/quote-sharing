@@ -19,7 +19,7 @@ const { authorLineShow, datetimeStr, count } = storeToRefs(store);
                 <span>{{ datetimeStr }}</span>
             </div>
             <TextEditor />
-            <div class="dashed-divider">
+            <div class="dashed-divider dashed-divider-2">
                 <div class="dashed-line"></div>
             </div>
             <div class="footer">
@@ -61,9 +61,8 @@ const { authorLineShow, datetimeStr, count } = storeToRefs(store);
 
         .datetime {
             color: #bbb;
-            margin: 12px 0 0 0;
+            margin: 12px 0 12px 0;
         }
-
 
         .dashed-divider {
             display: flex;
@@ -73,6 +72,10 @@ const { authorLineShow, datetimeStr, count } = storeToRefs(store);
             .dashed-line {
                 border: 1px dashed #bbb;
             }
+        }
+
+        .dashed-divider-2 {
+            margin-top: 12px;
         }
 
         .footer {

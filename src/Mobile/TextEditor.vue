@@ -14,24 +14,30 @@ const adjustHeight = () => {
 onMounted(() => {
     adjustHeight()
 })
+
+const clearText = () => {
+    if (store.text === '点击此处输入您想分享的内容...') {
+        store.text = ''
+    }
+}
 </script>
 <template>
-    <textarea ref="textareaRef" class="texts" v-model="store.text" @input="adjustHeight"></textarea>
+    <textarea ref="textareaRef" class="texts" v-model="store.text" @input="adjustHeight" @focus="clearText"></textarea>
 </template>
 
 <style lang="less" scoped>
-    .texts {
-        font-size: 14px;
-        font-weight: 400;
-        letter-spacing: 2px;
-        min-height: 100px;
-        padding: 4px;
-        white-space: pre-wrap;
-        overflow-wrap: break-word;
-        line-height: 24px;
-        margin-left: 18px;
-        margin-right: 18px;
-        border: none;
-        resize: none;
-    }
+.texts {
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    min-height: 100px;
+    padding: 4px;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    line-height: 24px;
+    margin-left: 18px;
+    margin-right: 18px;
+    border: none;
+    resize: none;
+}
 </style>
