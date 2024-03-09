@@ -5,6 +5,7 @@ import html2canvas from "html2canvas";
 import { UNSPLASH, BAIDU_FANYI } from "../conf.json";
 import { createApi } from "unsplash-js";
 import { debounce } from "lodash-es";
+import { useMediaQuery } from "@vueuse/core";
 
 export const unsplash = createApi({ accessKey: UNSPLASH.ACCESS_KEY });
 
@@ -111,6 +112,7 @@ export function exportPic(ele: HTMLDivElement) {
         logging: true,
         width: ele.clientWidth,
         height: ele.clientHeight - 2,
+        useCORS: true,
     }).then((canvas) => {
         // 将canvas转换为图片
         const image = canvas.toDataURL("image/png");
@@ -282,8 +284,6 @@ let setDomFontSizeDebounce = debounce(setDomFontSize, 400);
 window.addEventListener("resize", setDomFontSizeDebounce); // 浏览器加入收缩监听防抖，重新计算rem配置
 
 export function isMobileDevice() {
-    // 使用正则表达式匹配常见的移动设备关键词
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-    );
+    const res = useMediaQuery("(max-width: 480px)");
+    return res.value.valueOf();
 }

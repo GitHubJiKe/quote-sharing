@@ -36,22 +36,114 @@ body {
     font-style: italic;
 }
 
-/* 在线链接服务仅供平台体验和调试使用，平台不承诺服务的稳定性，企业客户需下载字体包自行发布使用并做好备份。 */
 @font-face {
     font-family: "iconfont"; /* Project id 4451165 */
-    src: url("//at.alicdn.com/t/c/font_4451165_dtblq7imxfk.woff2?t=1709447672862")
+    src: url("//at.alicdn.com/t/c/font_4451165_vsijislyzy.woff2?t=1709970506672")
             format("woff2"),
-        url("//at.alicdn.com/t/c/font_4451165_dtblq7imxfk.woff?t=1709447672862")
+        url("//at.alicdn.com/t/c/font_4451165_vsijislyzy.woff?t=1709970506672")
             format("woff"),
-        url("//at.alicdn.com/t/c/font_4451165_dtblq7imxfk.ttf?t=1709447672862")
+        url("//at.alicdn.com/t/c/font_4451165_vsijislyzy.ttf?t=1709970506672")
             format("truetype");
 }
+
 .iconfont {
     font-family: "iconfont" !important;
     font-size: 16px;
     font-style: normal;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-config:before {
+    content: "\e656";
+}
+
+.icon-tv:before {
+    content: "\e62c";
+}
+
+.icon-food:before {
+    content: "\e6d0";
+}
+
+.icon-childfriendly:before {
+    content: "\eac6";
+}
+
+.icon-love:before {
+    content: "\e60c";
+}
+
+.icon-movie:before {
+    content: "\e701";
+}
+
+.icon-train:before {
+    content: "\e669";
+}
+
+.icon-sort_sing:before {
+    content: "\e610";
+}
+
+.icon-parent-child:before {
+    content: "\e60a";
+}
+
+.icon-sleep:before {
+    content: "\e690";
+}
+
+.icon-plane:before {
+    content: "\e92b";
+}
+
+.icon-cat:before {
+    content: "\e600";
+}
+
+.icon-car:before {
+    content: "\e601";
+}
+
+.icon-Drink:before {
+    content: "\e6af";
+}
+
+.icon-coding:before {
+    content: "\e710";
+}
+
+.icon-writing:before {
+    content: "\e875";
+}
+
+.icon-dog:before {
+    content: "\e602";
+}
+
+.icon-Working:before {
+    content: "\e6fb";
+}
+
+.icon-arrow:before {
+    content: "\e625";
+}
+
+.icon-computer:before {
+    content: "\e6ad";
+}
+
+.icon-bike:before {
+    content: "\e652";
+}
+
+.icon-running:before {
+    content: "\e995";
+}
+
+.icon-tea:before {
+    content: "\e6c2";
 }
 
 .icon-dot:before {
@@ -66,21 +158,12 @@ body {
     content: "\e67d";
 }
 
-.icon-computer::before {
-    content: "\e6ad";
-}
-.icon-Working::before {
-    content: "\e6fb";
-}
-.icon-bike::before {
-    content: "\e652";
-}
-.icon-running::before {
-    content: "\e995";
-}
-.icon-tea::before {
-    content: "\e6c2";
-}
-.icon-arrow::before {
-    content: "\e625";
+.icon::after {
+    content: "";
+    background-color: #000;
+    width: 35px;
+    height: 5px;
+    display: block;
+    border-radius: 50%;
+    opacity: 0.3;
 }

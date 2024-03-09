@@ -17,10 +17,14 @@ const store = useMobileStore()
 .fun-icon-items {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     gap: 12px;
-    height: 44px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    justify-content: space-between;
 
     .fun-icon-item {
+        flex: 0 1 15%;
         padding: 8px;
         border-radius: 4px;
         color: white;
@@ -30,7 +34,6 @@ const store = useMobileStore()
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 34px;
     }
 
     .fun-icon-item-active {
