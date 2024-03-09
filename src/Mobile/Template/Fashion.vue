@@ -1,12 +1,9 @@
 <script setup lang="ts">
+import TextEditor from "../TextEditor.vue";
 import { useMobileStore } from "../store.ts";
 import { storeToRefs } from 'pinia';
 const store = useMobileStore()
 const { authorLineShow, datetimeStr, count } = storeToRefs(store);
-const onTxtChange = (e: unknown) => {
-    // @ts-ignore
-    store.text = e?.target['innerText']
-}
 </script>
 
 <template>
@@ -21,9 +18,7 @@ const onTxtChange = (e: unknown) => {
             <div class="datetime">
                 <span>{{ datetimeStr }}</span>
             </div>
-            <div class="texts" contenteditable @input="e => onTxtChange(e)">
-                {{ store.text }}
-            </div>
+            <TextEditor />
             <div class="dashed-divider">
                 <div class="dashed-line"></div>
             </div>
@@ -47,6 +42,8 @@ const onTxtChange = (e: unknown) => {
         background-color: #fff;
         padding: 18px;
         border-radius: 12px;
+        display: flex;
+        flex-direction: column;
 
         .header {
             height: 60px;
@@ -65,17 +62,6 @@ const onTxtChange = (e: unknown) => {
         .datetime {
             color: #bbb;
             margin: 12px 0 0 0;
-        }
-
-        .texts {
-            font-size: 14px;
-            margin: 12px 0;
-            font-weight: 400;
-            letter-spacing: 2px;
-            min-height: 100px;
-            padding: 4px;
-            white-space: pre-wrap;
-            line-height: 24px;
         }
 
 

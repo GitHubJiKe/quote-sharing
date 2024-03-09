@@ -13,12 +13,34 @@ const store = useMobileStore()
 const { authorLineShow } = storeToRefs(store)
 const onShare = () => {
     const preview = document.querySelector("#content")! as HTMLDivElement;
+    const textareaEl = preview.querySelector('textarea')!
+    const preEl = document.createElement('pre')!
+    const textsStyleStr = `font-size: 14px;
+            margin-top:0;
+            margin-bottom:0;
+            font-weight: 400;
+            letter-spacing: 2px;
+            min-height: 100px;
+            padding: 4px;
+            white-space: pre-wrap; 
+            overflow-wrap: break-word;
+            line-height: 24px;
+            margin-left: 18px;
+            margin-right: 18px;
+            border: none;
+            resize: none;`
+    preEl.style.cssText = textsStyleStr;
+    preEl.innerHTML = textareaEl.value.replace(/\n/g, '<br>');
+    textareaEl.insertAdjacentElement('beforebegin', preEl);
+    textareaEl.style.display = 'none';
     const nameEl = document.querySelector('.name')! as HTMLDivElement;
     if (authorLineShow.value?.show && nameEl?.innerHTML === '点击输入') {
         nameEl.style.display = "none"
     }
     exportPic(preview).then(() => {
         nameEl.style.display = ""
+        preEl.remove()
+        textareaEl.style.display = ""
     });
 }
 const { open, close } = useModal({

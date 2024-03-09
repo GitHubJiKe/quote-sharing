@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import TextEditor from '../TextEditor.vue'
 import { useMobileStore } from "../store.ts";
 import { storeToRefs } from 'pinia';
 const store = useMobileStore()
@@ -21,8 +22,7 @@ const { authorLineShow, datetimeStr, count, } = storeToRefs(store);
             <div class="header" :style="`background-image:${store.activeBgcolor}`">
                 <i class="iconfont icon" :class="`icon-${store.currentIcon}`"></i>
             </div>
-            <textarea class="texts" v-model="store.text" rows="8">
-            </textarea>
+            <TextEditor />
             <div class="footer">
                 <label class="name float-left" v-show="authorLineShow?.show" contenteditable>点击输入</label>
                 <label class="count float-right" :data-count="count">字数：</label>
@@ -97,19 +97,7 @@ const { authorLineShow, datetimeStr, count, } = storeToRefs(store);
 
 
 
-        .texts {
-            font-size: 14px;
-            font-weight: 400;
-            letter-spacing: 2px;
-            min-height: 100px;
-            padding: 4px;
-            white-space: pre-wrap;
-            line-height: 24px;
-            margin-left: 18px;
-            margin-right: 18px;
-            border: none;
-            resize: none;
-        }
+
 
 
         .dashed-divider {
