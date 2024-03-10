@@ -2,14 +2,26 @@
 import { operations } from '../../constants.ts'
 import { useMobileStore } from "../store.ts";
 const store = useMobileStore()
+
+const handleShow = (value: string) => {
+    if (value === 'icons') {
+        return store.temp !== 'Geek'
+    }
+    if (store.temp !== 'Geek') {
+        return value !== 'fontColor';
+    }
+    return true
+}
 </script>
 
 <template>
     <div class="tabs">
-        <div class="tab" v-for="item in operations" :key="item.value"
-            :class="{ 'tab-active': store.activeTab === item.value }" @click="store.activeTab = item.value">
-            {{ item.name }}
-        </div>
+        <template v-for="item in operations" :key="item.value">
+            <div class="tab" v-if="handleShow(item.value)" :class="{ 'tab-active': store.activeTab === item.value }"
+                @click="store.activeTab = item.value">
+                {{ item.name }}
+            </div>
+        </template>
     </div>
 </template>
 

@@ -1,5 +1,11 @@
 import { defineStore } from "pinia";
-import { bgcolors, funIcons, operations, visibleItems } from "../constants";
+import {
+    bgcolors,
+    fontColors,
+    funIcons,
+    operations,
+    visibleItems,
+} from "../constants";
 
 export const useMobileStore = defineStore("mobile", {
     state: () => ({
@@ -9,6 +15,7 @@ export const useMobileStore = defineStore("mobile", {
         currentIcon: funIcons[0].value,
         text: "点击此处输入您想分享的内容...",
         temp: "Clean",
+        fontColor: fontColors[0],
     }),
     getters: {
         authorLineShow(s) {

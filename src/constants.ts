@@ -281,7 +281,13 @@ export const operations = [
         value: "icons",
     },
     {
+        name: "字色",
+        value: "fontColor",
+    },
+    {
         name: "背景色",
         value: "bgColor",
     },
 ];
+
+export const fontColors = ["#f1a26f", "#b69bf1", "#e77d8f", "#a8cd76"];

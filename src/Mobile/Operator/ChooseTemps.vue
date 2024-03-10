@@ -14,6 +14,10 @@ const temps: TempItem[] = [
         value: 'Fashion'
     },
     {
+        name: '极客',
+        value: 'Geek'
+    },
+    {
         name: '包豪斯',
         value: 'Bauhaus',
         isPending: true
