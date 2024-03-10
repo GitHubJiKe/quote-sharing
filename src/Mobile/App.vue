@@ -8,6 +8,7 @@ import { useMobileStore } from './store'
 import { storeToRefs } from 'pinia'
 import Clean from './Template/Clean.vue';
 import Fashion from './Template/Fashion.vue';
+import Geek from './Template/Geek.vue';
 
 const store = useMobileStore()
 const { authorLineShow } = storeToRefs(store)
@@ -34,7 +35,7 @@ const onShare = () => {
     textareaEl.insertAdjacentElement('beforebegin', preEl);
     textareaEl.style.display = 'none';
     const nameEl = document.querySelector('.name')! as HTMLDivElement;
-    if (authorLineShow.value?.show && nameEl?.innerHTML === '点击输入') {
+    if (authorLineShow.value?.show && nameEl?.innerHTML.includes('点击输入')) {
         nameEl.style.display = "none"
     }
     exportPic(preview).then(() => {
@@ -61,6 +62,7 @@ const { open, close } = useModal({
             <Header @help="open" @share="onShare" />
             <Clean v-if="store.temp === 'Clean'" />
             <Fashion v-if="store.temp === 'Fashion'" />
+            <Geek v-if="store.temp === 'Geek'" />
         </div>
         <Opeartor />
     </div>
@@ -104,4 +106,4 @@ const { open, close } = useModal({
     display: flex;
     justify-content: flex-start;
 }
-</style>./Template/Clean.vue./Template/Fasion.vue
+</style>./Template/Clean.vue./Template/Fasion.vue./Template/Geek.vue

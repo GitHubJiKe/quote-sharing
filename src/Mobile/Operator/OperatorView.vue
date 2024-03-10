@@ -5,6 +5,7 @@ import Tabs from './Tabs.vue'
 import { useMobileStore } from '../store.ts';
 import { VueFinalModal } from 'vue-final-modal'
 import ChooseTemps from "./ChooseTemps.vue";
+import FontColors from "./FontColors.vue";
 const store = useMobileStore()
 
 const emit = defineEmits<{
@@ -24,7 +25,8 @@ const emit = defineEmits<{
         <div class="selectors">
             <ChooseTemps v-show="store.activeTab === 'template'" />
             <BgColors v-show="store.activeTab === 'bgColor'" />
-            <FunIcons v-show="store.activeTab === 'icons'" />
+            <FunIcons v-show="store.activeTab === 'icons' && store.temp !== 'Geek'" />
+            <FontColors v-show="store.activeTab === 'fontColor'" />
         </div>
     </VueFinalModal>
 </template>
