@@ -2,25 +2,27 @@
 import TextEditor from '../TextEditor.vue'
 import { useMobileStore } from "../store.ts";
 import { storeToRefs } from 'pinia';
+import UserName from './UserName.vue';
+import { globalFooterText } from '../../constants.ts';
+
 const store = useMobileStore()
-const { authorLineShow, datetimeStr, count, } = storeToRefs(store);
+const { datetimeStr, count, } = storeToRefs(store);
+
 </script>
 
 <template>
     <div id="content" class="content" :style="`background-image:${store.activeBgcolor}`">
         <div class="card" :style="`color:${store.fontColor}`">
-            <div class="header">
-                >>> {{ datetimeStr }}
+            <div class="header py-1">
+                >>> <label class="datetime">{{ datetimeStr }}</label>
             </div>
-            <label class="author name" :contenteditable="true" v-if="authorLineShow">
-                点击输入
-            </label>
+            <UserName />
             <TextEditor class="text-area" :style="`color:${store.fontColor}`" />
             <footer>
                 {{ count }}
             </footer>
             <div class="designer">
-                Designed with Quote Sharing
+                {{ globalFooterText }}
             </div>
         </div>
     </div>

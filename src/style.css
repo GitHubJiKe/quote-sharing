@@ -15,13 +15,8 @@ body {
     margin: 0;
     border: none;
 }
-/* This changes all the animations globally */
-:root {
-    --animate-duration: 1000ms;
-    --animate-delay: 0s;
-}
+
 #app {
-    height: 100%;
 }
 
 .im-fell-english-regular {
@@ -36,13 +31,14 @@ body {
     font-style: italic;
 }
 
+/* 在线链接服务仅供平台体验和调试使用，平台不承诺服务的稳定性，企业客户需下载字体包自行发布使用并做好备份。 */
 @font-face {
     font-family: "iconfont"; /* Project id 4451165 */
-    src: url("//at.alicdn.com/t/c/font_4451165_vsijislyzy.woff2?t=1709970506672")
+    src: url("//at.alicdn.com/t/c/font_4451165_50kwdfss44k.woff2?t=1710598201171")
             format("woff2"),
-        url("//at.alicdn.com/t/c/font_4451165_vsijislyzy.woff?t=1709970506672")
+        url("//at.alicdn.com/t/c/font_4451165_50kwdfss44k.woff?t=1710598201171")
             format("woff"),
-        url("//at.alicdn.com/t/c/font_4451165_vsijislyzy.ttf?t=1709970506672")
+        url("//at.alicdn.com/t/c/font_4451165_50kwdfss44k.ttf?t=1710598201171")
             format("truetype");
 }
 
@@ -52,6 +48,10 @@ body {
     font-style: normal;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-list:before {
+    content: "\e653";
 }
 
 .icon-config:before {

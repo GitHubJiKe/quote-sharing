@@ -3,8 +3,9 @@ import vue from "@vitejs/plugin-vue";
 import postCssPxToRem from "postcss-pxtorem";
 // https://vitejs.dev/config/
 const isMobile = process.env.PLATFORM === "mobile";
+import UnoCSS from "unocss/vite";
 export default defineConfig({
-    plugins: [vue()],
+    plugins: [vue(), UnoCSS()],
     server: {
         proxy: {
             "/api": "http://api.fanyi.baidu.com/api/trans/vip/translate",

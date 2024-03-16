@@ -16,13 +16,11 @@ export const useMobileStore = defineStore("mobile", {
         text: "点击此处输入您想分享的内容...",
         temp: "Clean",
         fontColor: fontColors[0],
+        datetimeStr: new Date().toLocaleString(),
     }),
     getters: {
         authorLineShow(s) {
             return s.visibleItems.find((v) => v.value === "author");
-        },
-        datetimeStr() {
-            return new Date().toLocaleString();
         },
         count(s) {
             return s.text.length;

@@ -6,6 +6,12 @@ import { UNSPLASH, BAIDU_FANYI } from "../conf.json";
 import { createApi } from "unsplash-js";
 import { debounce } from "lodash-es";
 import { useMediaQuery } from "@vueuse/core";
+import { getAuthUser, uploadFileByBytes } from "./firebase";
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { bgcolors } from "./constants";
+import { useRouter } from "vue-router";
+import { useUserStore } from "./store";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export const unsplash = createApi({ accessKey: UNSPLASH.ACCESS_KEY });
 
@@ -125,6 +131,49 @@ export function exportPic(ele: HTMLDivElement) {
         // 触发下载
         downloadLink.click();
         Promise.resolve("OK");
+    });
+}
+
+function dataURLToBlob(dataURL: string) {
+    const parts = dataURL.split(";base64,");
+    const contentType = parts[0].split(":")[1];
+    const raw = window.atob(parts[1]);
+    const rawLength = raw.length;
+    const uInt8Array = new Uint8Array(rawLength);
+    for (let i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i);
+    }
+    return new Blob([uInt8Array], { type: contentType });
+}
+
+export function genFileAndUpload(ele: HTMLDivElement, datetime: string) {
+    return new Promise((resolve, reject) => {
+        html2canvas(ele, {
+            allowTaint: true,
+            logging: true,
+            width: ele.clientWidth,
+            height: ele.clientHeight,
+            useCORS: true,
+        })
+            .then(async (canvas) => {
+                // Convert canvas to data URL
+                const dataURL = canvas.toDataURL();
+
+                // Convert data URL to Blob
+                const blob = dataURLToBlob(dataURL);
+
+                // Upload Blob to Google Cloud Storage
+                const result = await uploadFileByBytes({
+                    file: blob,
+                    filename: datetime,
+                    path: "quotes",
+                });
+
+                resolve(result);
+            })
+            .catch((error) => {
+                reject(error);
+            });
     });
 }
 
@@ -286,4 +335,52 @@ window.addEventListener("resize", setDomFontSizeDebounce); // 浏览器加入收
 export function isMobileDevice() {
     const res = useMediaQuery("(max-width: 480px)");
     return res.value.valueOf();
+}
+
+export function useRandomBgColorIndex(time: number = 5000) {
+    const bgColorIndex = ref(1);
+    let timer;
+    const autoSwitchBgColor = () => {
+        const len = bgcolors.length;
+        bgColorIndex.value = Math.floor(Math.random() * len);
+    };
+    onMounted(() => {
+        timer = setInterval(() => {
+            console.log(1111);
+            autoSwitchBgColor();
+        }, time);
+    });
+    onBeforeUnmount(() => {
+        clearInterval(timer!);
+        timer = null;
+    });
+
+    return bgColorIndex;
+}
+
+export function useAuthJudge(logined: () => void, logouted: () => void) {
+    const userStore = useUserStore();
+
+    const syncUserInfo = () => {
+        const user = getAuthUser()!;
+        console.log(user);
+        if (user) {
+            userStore.username = user.displayName!;
+            userStore.avatar = user.photoURL!;
+            userStore.email = user.email!;
+        }
+    };
+
+    onMounted(() => {
+        onAuthStateChanged(getAuth(), (user) => {
+            console.log(user);
+            if (user) {
+                // logined
+                logined();
+                syncUserInfo();
+            } else {
+                logouted();
+            }
+        });
+    });
 }

@@ -2,8 +2,10 @@
 import TextEditor from '../TextEditor.vue'
 import { useMobileStore } from "../store.ts";
 import { storeToRefs } from 'pinia';
+import UserName from './UserName.vue';
+import { globalFooterText } from '../../constants.ts';
 const store = useMobileStore()
-const { authorLineShow, datetimeStr, count, } = storeToRefs(store);
+const { datetimeStr, count, } = storeToRefs(store);
 </script>
 
 <template>
@@ -19,16 +21,16 @@ const { authorLineShow, datetimeStr, count, } = storeToRefs(store);
                     <div class="circle"></div>
                 </div>
             </div>
-            <div class="header" :style="`background-image:${store.activeBgcolor}`">
+            <div class="header py-1" :style="`background-image:${store.activeBgcolor}`">
                 <i class="iconfont icon" :class="`icon-${store.currentIcon}`"></i>
             </div>
             <TextEditor />
             <div class="footer">
-                <label class="name float-left" v-show="authorLineShow?.show" contenteditable>点击输入</label>
+                <UserName class="float-left" />
                 <label class="count float-right" :data-count="count">字数：</label>
             </div>
         </div>
-        <div class="designer">Designed with Quote Sharing</div>
+        <div class="designer">{{ globalFooterText }}</div>
     </div>
 </template>
 
@@ -43,7 +45,7 @@ const { authorLineShow, datetimeStr, count, } = storeToRefs(store);
     .card {
         background-color: #fff;
         border-radius: 12px;
-        box-shadow: 5px 5px 0px rgba(0, 0, 0);
+        // box-shadow: 5px 5px 0px rgba(0, 0, 0);
         border: 2px solid #000;
         display: flex;
         flex-direction: column;
@@ -70,7 +72,7 @@ const { authorLineShow, datetimeStr, count, } = storeToRefs(store);
                     height: 10px;
                     border-radius: 50%;
                     border: 2px solid #000;
-                    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
+                    // box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
                 }
 
                 .circle:nth-child(2) {
@@ -136,7 +138,7 @@ const { authorLineShow, datetimeStr, count, } = storeToRefs(store);
         padding: 8px 0;
         border: 2px solid #000;
         font-weight: 600;
-        box-shadow: 5px 5px 0px rgba(0, 0, 0);
+        // box-shadow: 5px 5px 0px rgba(0, 0, 0);
     }
 }
 </style>

@@ -1,13 +1,14 @@
 <script setup lang="ts">
+import { useUserStore } from '../store';
 import { useMobileStore } from './store'
 
 const emit = defineEmits<{
     (e: 'help'): void;
-    (e: 'share'): void;
+    (e: 'list'): void;
 }>()
 
 const store = useMobileStore()
-
+const userStore = useUserStore()
 const onReset = () => {
     store.text = '';
     (document.querySelector('.texts') as HTMLDivElement).focus()
@@ -16,18 +17,28 @@ const onReset = () => {
 
 <template>
     <div class="header">
-        <div class="left">
-            <label class="iconfont icon-dot" @click="emit('help')"></label>
-        </div>
+        <header class="left flex flex-col">
+            <img :src="userStore.avatar" alt="avatar" srcset="" class="avatar">
+            <label>
+                {{ userStore.username }}
+            </label>
+        </header>
         <div class="right">
+            <label class="iconfont icon-dot" @click="emit('help')"></label>
             <label class="iconfont icon-eraser" @click="onReset"></label>
-            <label class="iconfont icon-share" @click="emit('share')"></label>
+            <label class="iconfont icon-list" @click="emit('list')"></label>
         </div>
     </div>
 </template>
 
 
 <style lang="less" scoped>
+.web-header {
+    border-top: 0.01rem solid white;
+    border-left: 0.01rem solid white;
+    border-right: 0.01rem solid white;
+}
+
 .header {
     display: flex;
     justify-content: space-between;
@@ -35,8 +46,25 @@ const onReset = () => {
     color: white;
     padding: 12px;
 
+
     label {
         font-size: 24px;
+    }
+
+    .left {
+        gap: 2px;
+
+        .avatar {
+            width: 40px;
+        }
+
+        img {
+            border-radius: 50%;
+        }
+
+        label {
+            font-size: 10px;
+        }
     }
 
     .right {

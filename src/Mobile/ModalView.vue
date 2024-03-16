@@ -1,19 +1,23 @@
 <script setup lang="ts">
 import { VueFinalModal } from 'vue-final-modal'
-import qrcode from '../qrcode.jpg';
 
 
 const emit = defineEmits<{
     (e: 'confirm'): void
 }>()
+
+const githubLogo = 'https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png'
 </script>
 
 <template>
     <VueFinalModal class="confirm-modal" content-class="confirm-modal-content" overlay-transition="vfm-fade"
         content-transition="vfm-fade">
-        <h1>打赏 </h1>
-        <img :src="qrcode" width="50%" height="50%" alt="qrcode" />
-        <p>反馈：<a href="mailto:ypf9319@gmail.com">ypf9319@gmail.com</a></p>
+        <h1>反馈 </h1>
+        <a href="https://github.com/GitHubJiKe/quote-sharing" target="_blank" rel="noopener noreferrer"
+            class="flex justify-center">
+            <img :src="githubLogo" width="50%" height="50%" alt="qrcode" />
+        </a>
+        <p>电邮：<a href="mailto:ypf9319@gmail.com">ypf9319@gmail.com</a></p>
         <button @click="emit('confirm')" class="btn-close">
             关闭
         </button>
@@ -44,7 +48,6 @@ const emit = defineEmits<{
 
 .confirm-modal-content h1 {
     font-size: 18px;
-    color: gold;
 }
 
 .confirm-modal-content button {

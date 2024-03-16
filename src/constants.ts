@@ -291,3 +291,6 @@ export const operations = [
 ];
 
 export const fontColors = ["#f1a26f", "#b69bf1", "#e77d8f", "#a8cd76"];
+
+export const SHINING_TEXT = "灵光✨一闪✨";
+export const globalFooterText = `by ${SHINING_TEXT}`;
