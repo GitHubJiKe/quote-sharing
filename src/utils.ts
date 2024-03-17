@@ -12,6 +12,7 @@ import { bgcolors } from "./constants";
 import { useUserStore } from "./store";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useLoading } from "vue-loading-overlay";
+
 export const unsplash = createApi({ accessKey: UNSPLASH.ACCESS_KEY });
 
 export function jsonp(url: string, callbackName = "callback") {
@@ -83,32 +84,6 @@ export const fetchTranslate = (txt: string, from = "zh", to = "en") => {
             });
     });
 };
-// // @ts-ignore
-// function getPixelRatio(context) {
-//     var backingStore =
-//         context.backingStorePixelRatio ||
-//         context.webkitBackingStorePixelRatio ||
-//         context.mozBackingStorePixelRatio ||
-//         context.msBackingStorePixelRatio ||
-//         context.oBackingStorePixelRatio ||
-//         context.backingStorePixelRatio ||
-//         1;
-//     return (window.devicePixelRatio || 1) / backingStore;
-// }
-// function scaleCanvas(ele: HTMLDivElement) {
-//     const shareContent = ele; // 需要绘制的部分的 (原生）dom 对象 ，注意容器的宽度不要使用百分比，使用固定宽度，避免缩放问题
-//     const width = shareContent.offsetWidth; // 获取(原生）dom 宽度
-//     const height = shareContent.offsetHeight; // 获取(原生）dom 高
-//     const offsetTop = shareContent.offsetTop; //元素距离顶部的偏移量
-
-//     const canvas = document.createElement("canvas"); //创建canvas 对象
-//     const context = canvas.getContext("2d")!;
-//     const scaleBy = getPixelRatio(context); //获取像素密度的方法 (也可以采用自定义缩放比例)
-//     canvas.width = width * scaleBy; //这里 由于绘制的dom 为固定宽度，居中，所以没有偏移
-//     canvas.height = (height + offsetTop) * scaleBy; // 注意高度问题，由于顶部有个距离所以要加上顶部的距离，解决图像高度偏移问题
-//     context.scale(scaleBy, scaleBy);
-//     return { canvas, scale: scaleBy };
-// }
 
 export function exportPic(ele: HTMLDivElement) {
     // 假设你想要将ID为"domElement"的DOM元素转换为图片
@@ -207,7 +182,6 @@ export const genPIic2Download = (element: HTMLDivElement) => {
     img.onload = function () {
         context.drawImage(img, 0, 0);
         DOMURL.revokeObjectURL(url);
-        console.log(canvas, img);
         // 将 Canvas 转换为 Base64 图片数据
         const imageData = canvas.toDataURL("image/png");
 
@@ -361,7 +335,7 @@ export function useAuthJudge(logined: () => void, logouted: () => void) {
 
     const syncUserInfo = () => {
         const user = getAuthUser()!;
-        console.log(user);
+        console.log("syncUserInfo", user);
         if (user) {
             userStore.username = user.displayName!;
             userStore.avatar = user.photoURL!;
@@ -370,8 +344,8 @@ export function useAuthJudge(logined: () => void, logouted: () => void) {
     };
 
     onMounted(() => {
-        onAuthStateChanged(getAuth(), (user) => {
-            console.log(user);
+        onAuthStateChanged(getAuth(), async (user) => {
+            console.log("onAuthStateChanged", user);
             if (user) {
                 // logined
                 logined();
@@ -414,32 +388,28 @@ export interface CurrentUser {
     vipLevel: number;
     exteraCardCount: number;
 }
-
+// vipLevel::
 export function useQueryCurrentUser() {
-    const query = async () => {
-        const user = getAuthUser();
-        if (user) {
-            const result = await queryDocument("user", [
-                {
-                    op: "",
-                    conditions: [
-                        {
-                            field: "email",
-                            op: "==",
-                            value: user?.email!,
-                        },
-                    ],
-                },
-            ]);
-            if (result && !result?.empty) {
-                return result.docs.map((doc) => {
-                    return doc.data();
-                })[0] as CurrentUser;
-            }
+    return async () => {
+        const user = getAuthUser()!;
+        const result = await queryDocument("user", [
+            {
+                op: "",
+                conditions: [
+                    {
+                        field: "email",
+                        op: "==",
+                        value: user?.email!,
+                    },
+                ],
+            },
+        ]);
+        if (result && !result?.empty) {
+            return result.docs.map((doc) => {
+                return doc.data();
+            })[0] as CurrentUser;
         }
     };
-
-    return query;
 }
 
 export interface DocItem {

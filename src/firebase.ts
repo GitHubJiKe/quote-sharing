@@ -14,8 +14,17 @@ import { getStorage, ref, uploadBytes, listAll } from "firebase/storage";
 import { FirebaseApp, initializeApp } from "firebase/app";
 import { getAnalytics, logEvent } from "firebase/analytics";
 import { FIREBASE } from "../conf.json";
-import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
+import {
+    GoogleAuthProvider,
+    signInWithPopup,
+    getAuth,
+    sendSignInLinkToEmail,
+    isSignInWithEmailLink,
+    signInWithEmailLink,
+} from "firebase/auth";
 import { pick } from "lodash-es";
+import { toast } from "vue3-toastify";
+import { useRouter } from "vue-router";
 
 function getAuthUser() {
     return getAuth().currentUser;
@@ -138,7 +147,6 @@ async function authLoginByGoogle() {
             },
         ]);
 
-        console.log("queryDocument:::", res);
         if (res && res?.size === 0 && res.empty) {
             addDocument({
                 entity: "user",
@@ -154,6 +162,8 @@ async function authLoginByGoogle() {
                         "uid",
                     ]),
                     token,
+                    vipLevel: -1,
+                    exteraCardCount: 0,
                 } as unknown as AddDocOpt["entityObj"],
             });
         }
@@ -225,6 +235,79 @@ async function queryDocument(entity: string, conditions: Condition[]) {
     }
 }
 
+function sendLoginLinklWithEmail(email: string) {
+    const actionCodeSettings = {
+        url: window.location.href,
+        handleCodeInApp: true,
+    };
+    const auth = getAuth();
+    sendSignInLinkToEmail(auth, email, actionCodeSettings)
+        .then(() => {
+            // The link was successfully sent. Inform the user.
+            // Save the email locally so you don't need to ask the user for it again
+            // if they open the link on the same device.
+            window.localStorage.setItem("emailForSignIn", email);
+            toast.success("邮件发送成功，请前往邮箱，点击登录链接完成登录");
+            // ...
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+}
+
+function signInSuccessWithEmail() {
+    // Confirm the link is a sign-in with email link.
+    const router = useRouter();
+    const auth = getAuth();
+    if (isSignInWithEmailLink(auth, window.location.href)) {
+        // Additional state parameters can also be passed via URL.
+        // This can be used to continue the user's intended action before triggering
+        // the sign-in operation.
+        // Get the email if available. This should be available if the user completes
+        // the flow on the same device where they started it.
+        let email = window.localStorage.getItem("emailForSignIn");
+        if (!email) {
+            // User opened the link on a different device. To prevent session fixation
+            // attacks, ask the user to provide the associated email again. For example:
+            email = window.prompt("请提供邮箱地址")!;
+        }
+        // The client SDK will parse the code from the link for you.
+        signInWithEmailLink(auth, email, window.location.href)
+            .then((result) => {
+                // Clear email from storage.
+                window.localStorage.removeItem("emailForSignIn");
+                // You can access the new user via result.user
+                // Additional user info profile not available via:
+                // result.additionalUserInfo.profile == null
+                // You can check if the user is new or existing:
+                // result.additionalUserInfo.isNewUser
+                const { user } = result;
+                addDocument({
+                    entity: "user",
+                    entityObj: {
+                        ...pick(user, [
+                            "displayName",
+                            "accessToken",
+                            "email",
+                            "isAnonymous",
+                            "phoneNumber",
+                            "photoURL",
+                            "refreshToken",
+                            "uid",
+                        ]),
+                        vipLevel: -1,
+                        exteraCardCount: 0,
+                    } as unknown as AddDocOpt["entityObj"],
+                }).then(() => {
+                    router.push("/writing");
+                });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+}
+
 export {
     setDocument,
     addDocument,
@@ -236,4 +319,6 @@ export {
     authLoginByGoogle,
     queryDocument,
     getAuthUser,
+    sendLoginLinklWithEmail,
+    signInSuccessWithEmail,
 };
