@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { CurrentUser, exportPic, genFileAndUpload, isMobileDevice, useAuthJudge, useBodyBgColor, useFetchCardList, useQueryCurrentUser } from "../../utils";
-
-
 import Header from '../components/Header.vue';
 import Opeartor from "../Operator/Opeartor.vue";
 import { useMobileStore } from '../store'
@@ -21,16 +19,17 @@ const PICTURE_HOST = `https://firebasestorage.googleapis.com/v0/b/talk-is-cheap-
 
 const $loading = useLoading();
 const userStore = useUserStore()
-const query = useQueryCurrentUser()
 const store = useMobileStore()
 const cleanTemp = ref()
 const fashionTemp = ref()
 const geekTemp = ref()
 const { fetchList, list } = useFetchCardList()
+
 const currentUser = ref<CurrentUser>()
+const query = useQueryCurrentUser()
 
 onBeforeMount(async () => {
-    currentUser.value = await query()
+    currentUser.value = await query()!
     await fetchList()
 })
 
@@ -70,6 +69,7 @@ const toogleToolbar = () => {
 
 const onShare = () => {
     toogleToolbar()
+
     nextTick(async () => {
         const preview = document.querySelector("#content")! as HTMLDivElement;
         const datetimeEL = preview.querySelector('.datetime')!
@@ -118,8 +118,11 @@ const isMobile = isMobileDevice()
 
 
 const router = useRouter()
+
+const isLogined = ref(false);
+
 useAuthJudge(() => {
-    // you are logined
+    isLogined.value = true
 }, () => {
     router.back()
 })
@@ -135,7 +138,7 @@ const gotoList = () => {
     <div class="flex justify-center bg-black h-dvh">
         <div :class="{ 'quote-sharing': isMobile, 'quote-sharing-web': !isMobile }" class="m-t-4">
 
-            <div class="box">
+            <div class="box" v-if="isLogined">
                 <Header @list="gotoList" :class="{ 'web-header': !isMobile }" @reset="doRest" />
                 <Clean v-if="store.temp === 'Clean'" ref="cleanTemp" />
                 <Fashion v-if="store.temp === 'Fashion'" ref="fashionTemp" />
@@ -171,4 +174,4 @@ const gotoList = () => {
     border-radius: 50%;
     color: #fff;
 }
-</style>../components/Header.vue../components/ModalView.vue../components/QrcodeView.vue
+</style>

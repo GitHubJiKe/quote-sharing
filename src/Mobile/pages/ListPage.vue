@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { CurrentUser, useFetchCardList, isMobileDevice, useAuthJudge, useBodyBgColor, useQueryCurrentUser, useRandomBgColorIndex } from '../../utils';
+import { useFetchCardList, isMobileDevice, useAuthJudge, useBodyBgColor, useQueryCurrentUser, useRandomBgColorIndex, CurrentUser } from '../../utils';
 import { useRouter } from "vue-router";
 import { SHINING_TEXT, VIP_LEVEL_MAP, bgcolors } from '../../constants'
 import { useUserStore } from '../../store';
@@ -9,6 +9,8 @@ import { NImage } from 'naive-ui';
 const bgColorIndex = useRandomBgColorIndex();
 const isMobile = isMobileDevice()
 const router = useRouter()
+const currentUser = ref<CurrentUser>();
+const query = useQueryCurrentUser()
 
 useBodyBgColor()
 
@@ -18,12 +20,11 @@ const bg = computed(() => {
     return bgcolors[bgColorIndex.value]
 })
 
-const queryCurrentUser = useQueryCurrentUser()
 
 useAuthJudge(async () => {
     // logined
+    currentUser.value = (await query())!
     await fetchList()
-    currentUser.value = (await queryCurrentUser())!
     levelObj.value = VIP_LEVEL_MAP[currentUser.value.vipLevel]
 }, () => {
     router.replace('/')
@@ -44,14 +45,14 @@ const levelObj = ref({
     money: 0,
 })
 
-const currentUser = ref<CurrentUser>()
+
 
 const getUserNameClass = () => {
-    if (!currentUser.value) {
+    if (!currentUser) {
         return ''
     }
 
-    switch (currentUser.value.vipLevel) {
+    switch (currentUser.value?.vipLevel) {
         case -1:
             return ''
         case 0:
@@ -134,9 +135,6 @@ const gotoPay = () => {
 .card-box {
     flex-wrap: wrap;
 
-    label {
-        font-size: 24px;
-    }
 
     .header-bar {
         border-top-left-radius: 4px;
@@ -155,9 +153,6 @@ const gotoPay = () => {
         border-radius: 50%;
     }
 
-    label {
-        font-size: 10px;
-    }
 
     .shining-card {
 

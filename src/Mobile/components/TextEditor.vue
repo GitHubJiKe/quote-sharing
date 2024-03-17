@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, ref } from "vue";
+import { onBeforeMount, ref, watchEffect } from "vue";
 import { useMobileStore } from "../store";
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
@@ -13,18 +13,24 @@ const store = useMobileStore()
 
 const theme = ref<'snow' | 'bubble'>("snow")
 const currentUser = ref<CurrentUser>()
+
 const query = useQueryCurrentUser()
 
+
 onBeforeMount(async () => {
-    currentUser.value = await query()
+    console.log(22222);
+    currentUser.value = await query()!
 })
 
-const vipLevel = computed(() => {
-    if (currentUser.value) {
-        return currentUser.value.vipLevel;
-    }
 
-    return 1
+const vipLevel = ref(-1);
+
+watchEffect(() => {
+    if (currentUser?.value) {
+        console.log('watchEffect', currentUser?.value);
+
+        vipLevel.value = currentUser?.value?.vipLevel!
+    }
 })
 
 const clearText = () => {
@@ -51,7 +57,6 @@ defineExpose({
 
 
 const contentUpdate = (text: string) => {
-    console.log('vipLevel::', vipLevel.value);
     const obj = VIP_LEVEL_MAP[vipLevel.value]
     if (store.count >= obj.maxContentLength) {
         toast.warning(`您当前的等级只能输入${obj.maxContentLength}个字符`)

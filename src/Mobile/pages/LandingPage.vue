@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { bgcolors } from '../../constants'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { isMobileDevice, useAuthJudge, useRandomBgColorIndex } from '../../utils';
 import Title from './Title.vue';
 import { useRouter } from "vue-router";
 import { useUserStore } from '../../store';
-import { authLoginByGoogle, getAuthUser } from '../../firebase';
+import { authLoginByGoogle, getAuthUser, signInSuccessWithEmail } from '../../firebase';
 import { SHINING_TEXT } from '../../constants';
 import { toast } from 'vue3-toastify';
-
+import { ModalsContainer, useModal } from 'vue-final-modal';
+import LoginView from '../components/LoginView.vue';
 const userStore = useUserStore();
 
 const bgColorIndex = useRandomBgColorIndex();
@@ -24,20 +25,31 @@ const bg = computed(() => {
 })
 
 
-
 const router = useRouter()
 
 const gotoShare = async () => {
     if (getAuthUser()) {
         router.push('/writing')
-        return;
-    }
-    const logined = await loginByGoogle();
-    if (logined) {
-        router.push('/writing')
     }
 }
 
+onMounted(() => {
+    gotoShare()
+})
+
+const { open, close } = useModal({
+    component: LoginView,
+    attrs: {
+        onGoogleLogin: async () => {
+            close()
+            const logined = await loginByGoogle();
+            if (logined) {
+                router.push('/writing')
+            }
+        },
+        onClose: () => close()
+    }
+})
 const loginByGoogle = async () => {
     if (userStore.username && userStore.avatar) {
         return true;
@@ -47,6 +59,7 @@ const loginByGoogle = async () => {
         userStore.username = user.username!
         userStore.avatar = user.avatar!
         userStore.email = user.email!
+
         return true
     }
 
@@ -60,18 +73,27 @@ useAuthJudge(() => {
         }
     })
 }, () => {
-    toast.warning('登录开启分享之旅')
+    // toast.warning('登录开启分享之旅')
+})
+
+const goLogin = () => {
+    open()
+}
+
+onMounted(() => {
+    signInSuccessWithEmail()
 })
 
 </script>
 
 <template>
     <div class="w-full flex flex-col h-full select-none h-dvh">
+        <ModalsContainer />
         <header class="px-8 py-0 flex justify-between items-center">
             <h3 :style="`background-image:${bg}`" class="p-4 header-title">{{ SHINING_TEXT }}
             </h3>
             <Title :bg="bg" v-if="!isMobile"></Title>
-            <div @click="gotoShare" class="btn p-4 cursor-pointer" :style="`background-image:${bg}`">立即登录</div>
+            <div @click="goLogin" class="btn p-4 cursor-pointer" :style="`background-image:${bg}`">立即登录</div>
         </header>
         <main class="flex-1 content" :style="`background-image:${bg}`">
         </main>
