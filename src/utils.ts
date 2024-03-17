@@ -6,13 +6,12 @@ import { UNSPLASH, BAIDU_FANYI } from "../conf.json";
 import { createApi } from "unsplash-js";
 import { debounce } from "lodash-es";
 import { useMediaQuery } from "@vueuse/core";
-import { getAuthUser, uploadFileByBytes } from "./firebase";
+import { getAuthUser, queryDocument, uploadFileByBytes } from "./firebase";
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import { bgcolors } from "./constants";
-import { useRouter } from "vue-router";
 import { useUserStore } from "./store";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-
+import { useLoading } from "vue-loading-overlay";
 export const unsplash = createApi({ accessKey: UNSPLASH.ACCESS_KEY });
 
 export function jsonp(url: string, callbackName = "callback") {
@@ -346,7 +345,6 @@ export function useRandomBgColorIndex(time: number = 5000) {
     };
     onMounted(() => {
         timer = setInterval(() => {
-            console.log(1111);
             autoSwitchBgColor();
         }, time);
     });
@@ -383,4 +381,104 @@ export function useAuthJudge(logined: () => void, logouted: () => void) {
             }
         });
     });
+}
+
+export function useBodyBgColor() {
+    const setBodyBlack = () => {
+        document.body.style.backgroundColor = "#000000";
+    };
+
+    const setBodyWhite = () => {
+        document.body.style.backgroundColor = "#FFFFFF";
+    };
+
+    onMounted(() => {
+        setBodyBlack();
+    });
+
+    onBeforeUnmount(() => {
+        setBodyWhite();
+    });
+}
+
+export interface CurrentUser {
+    accessToken: string;
+    displayName: string;
+    email: string;
+    isAnonymous: boolean;
+    phoneNumber: string;
+    photoURL: string;
+    refreshToken: string;
+    token: string;
+    uid: string;
+    vipLevel: number;
+    exteraCardCount: number;
+}
+
+export function useQueryCurrentUser() {
+    const query = async () => {
+        const user = getAuthUser();
+        if (user) {
+            const result = await queryDocument("user", [
+                {
+                    op: "",
+                    conditions: [
+                        {
+                            field: "email",
+                            op: "==",
+                            value: user?.email!,
+                        },
+                    ],
+                },
+            ]);
+            if (result && !result?.empty) {
+                return result.docs.map((doc) => {
+                    return doc.data();
+                })[0] as CurrentUser;
+            }
+        }
+    };
+
+    return query;
+}
+
+export interface DocItem {
+    email: string;
+    datetime: string;
+    picURL: string;
+    content: string;
+    id: string;
+}
+export function useFetchCardList() {
+    const loading = useLoading();
+    const list = ref<DocItem[]>([]);
+    const fetchList = async () => {
+        const user = getAuthUser();
+        if (user) {
+            const loader = loading.show();
+            const result = await queryDocument("quotes", [
+                {
+                    op: "",
+                    conditions: [
+                        {
+                            field: "email",
+                            op: "==",
+                            value: user?.email!,
+                        },
+                    ],
+                },
+            ]);
+            if (result) {
+                list.value = result.docs.map((doc) => {
+                    return {
+                        id: doc.id,
+                        ...doc.data(),
+                    } as DocItem;
+                });
+            }
+            loader.hide();
+        }
+    };
+
+    return { fetchList, list };
 }

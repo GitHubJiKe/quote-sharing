@@ -1,18 +1,12 @@
 <script setup lang="ts">
-import { useUserStore } from '../store';
-import { useMobileStore } from './store'
+import { useUserStore } from '../../store';
 
 const emit = defineEmits<{
-    (e: 'help'): void;
     (e: 'list'): void;
+    (e: 'reset'): void;
 }>()
 
-const store = useMobileStore()
 const userStore = useUserStore()
-const onReset = () => {
-    store.text = '';
-    (document.querySelector('.texts') as HTMLDivElement).focus()
-}
 </script>
 
 <template>
@@ -24,8 +18,7 @@ const onReset = () => {
             </label>
         </header>
         <div class="right">
-            <label class="iconfont icon-dot" @click="emit('help')"></label>
-            <label class="iconfont icon-eraser" @click="onReset"></label>
+            <label class="iconfont icon-eraser" @click="emit('reset')"></label>
             <label class="iconfont icon-list" @click="emit('list')"></label>
         </div>
     </div>
@@ -72,4 +65,4 @@ const onReset = () => {
         gap: 24px;
     }
 }
-</style>
+</style>../../store

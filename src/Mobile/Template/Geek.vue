@@ -1,27 +1,44 @@
 <script setup lang="ts">
-import TextEditor from '../TextEditor.vue'
+import TextEditor from '../components/TextEditor.vue'
 import { useMobileStore } from "../store.ts";
 import { storeToRefs } from 'pinia';
 import UserName from './UserName.vue';
 import { globalFooterText } from '../../constants.ts';
+import { ref } from 'vue';
 
 const store = useMobileStore()
 const { datetimeStr, count, } = storeToRefs(store);
+const editor = ref()
 
+const doRest = () => {
+    if (editor) {
+        editor.value.reset()
+    }
+}
+const doToogleToolbar = () => {
+    if (editor) {
+        editor.value.toogleToolbar()
+    }
+}
+
+defineExpose({
+    reset: doRest,
+    toogleToolbar: doToogleToolbar
+})
 </script>
 
 <template>
     <div id="content" class="content" :style="`background-image:${store.activeBgcolor}`">
         <div class="card" :style="`color:${store.fontColor}`">
-            <div class="header py-1">
+            <div class="header py-1 text-4">
                 >>> <label class="datetime">{{ datetimeStr }}</label>
             </div>
             <UserName />
-            <TextEditor class="text-area" :style="`color:${store.fontColor}`" />
-            <footer>
+            <TextEditor ref="editor" class="text-area" :style="`color:${store.fontColor}`" />
+            <footer class="text-4">
                 {{ count }}
             </footer>
-            <div class="designer">
+            <div class="designer text-4">
                 {{ globalFooterText }}
             </div>
         </div>

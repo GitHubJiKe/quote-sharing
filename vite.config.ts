@@ -24,7 +24,15 @@ export default defineConfig({
         },
     },
     build: {
-        outDir: isMobile ? "docs/mobile" : "docs/web",
+        outDir: "docs",
+        chunkSizeWarningLimit: 400,
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    vue: ["vue"],
+                    "vue-router": ["vue-router"],
+                },
+            },
+        },
     },
-    base: isMobile ? "/quote-sharing/mobile" : "/quote-sharing/web",
 });

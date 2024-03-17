@@ -294,3 +294,43 @@ export const fontColors = ["#f1a26f", "#b69bf1", "#e77d8f", "#a8cd76"];
 
 export const SHINING_TEXT = "灵光✨一闪✨";
 export const globalFooterText = `by ${SHINING_TEXT}`;
+
+interface VIPItem {
+    maxContentLength: number;
+    listMaxCount: number;
+    templateCount: number;
+    money: number;
+}
+
+export const VIP_LEVEL_MAP: { [k: number]: VIPItem } = {
+    [-1]: {
+        maxContentLength: 100,
+        listMaxCount: 0,
+        templateCount: 3,
+        money: 0,
+    },
+    [1]: {
+        maxContentLength: 300,
+        listMaxCount: 100,
+        templateCount: 10,
+        money: 10,
+    },
+    [2]: {
+        maxContentLength: 3000,
+        listMaxCount: 300,
+        templateCount: 30,
+        money: 30,
+    },
+    [3]: {
+        maxContentLength: 30000,
+        listMaxCount: 500,
+        templateCount: 50,
+        money: 50,
+    },
+    [0]: {
+        maxContentLength: Number.MAX_VALUE,
+        listMaxCount: Number.MAX_VALUE,
+        templateCount: Number.MAX_VALUE,
+        money: 0,
+    },
+};
