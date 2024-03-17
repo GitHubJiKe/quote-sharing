@@ -1,24 +1,30 @@
 import { createApp } from "vue";
 import "./style.css";
-import WebApp from "./App2.vue";
 import MobileApp from "./Mobile/App.vue";
-import { isMobileDevice, setDomFontSize } from "./utils";
+import { setDomFontSize } from "./utils";
 import { createVfm } from "vue-final-modal";
 import { createPinia } from "pinia";
 import "vue-final-modal/style.css";
 import "animate.css";
+import { initApp } from "./firebase";
+import "virtual:uno.css";
+import { LoadingPlugin } from "vue-loading-overlay";
+import "vue-loading-overlay/dist/css/index.css";
+import Vue3Toasity from "vue3-toastify";
+import "vue3-toastify/dist/index.css";
+import { router } from "./Mobile/routes";
 
+const firebaseApp = initApp();
 const vfm = createVfm();
 let app: ReturnType<typeof createApp>;
-if (isMobileDevice()) {
-    const pinia = createPinia();
-    setDomFontSize();
-    console.log("This is a mobile device.");
-    app = createApp(MobileApp);
-    app.use(pinia);
-} else {
-    console.log("This is a desktop device.");
-    app = createApp(WebApp);
+const pinia = createPinia();
+setDomFontSize();
+app = createApp(MobileApp);
+app.use(router);
+app.use(pinia);
+app.use(LoadingPlugin);
+app.use(Vue3Toasity);
+app.use(vfm);
+if (firebaseApp) {
+    app.mount("#app");
 }
-
-app.use(vfm).mount("#app");

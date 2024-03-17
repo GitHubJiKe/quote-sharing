@@ -1,33 +1,53 @@
 <script setup lang="ts">
-import TextEditor from "../TextEditor.vue";
+import TextEditor from "../components/TextEditor.vue";
 import { useMobileStore } from "../store.ts";
 import { storeToRefs } from 'pinia';
+import UserName from "./UserName.vue";
+import { globalFooterText } from '../../constants.ts';
+import { ref } from "vue";
 const store = useMobileStore()
-const { authorLineShow, datetimeStr, count } = storeToRefs(store);
+const { datetimeStr, count } = storeToRefs(store);
+const editor = ref()
+
+const doRest = () => {
+    if (editor) {
+        editor.value.reset()
+    }
+}
+const doToogleToolbar = () => {
+    if (editor) {
+        editor.value.toogleToolbar()
+    }
+}
+
+defineExpose({
+    reset: doRest,
+    toogleToolbar: doToogleToolbar
+})
 </script>
 
 <template>
     <div id="content" class="content" :style="`background-image:${store.activeBgcolor}`">
         <div class="card">
-            <div class="header" :style="`background-image:${store.activeBgcolor}`">
+            <div class="header py-1" :style="`background-image:${store.activeBgcolor}`">
                 <i class="iconfont icon" :class="`icon-${store.currentIcon}`"></i>
             </div>
             <div class="dashed-divider">
                 <div class="dashed-line"></div>
             </div>
-            <div class="datetime">
+            <div class="datetime text-4">
                 <span>{{ datetimeStr }}</span>
             </div>
-            <TextEditor />
+            <TextEditor ref="editor" />
             <div class="dashed-divider dashed-divider-2">
                 <div class="dashed-line"></div>
             </div>
             <div class="footer">
-                <label class="name float-left" v-show="authorLineShow?.show" contenteditable>点击输入</label>
-                <label class="count float-right" :data-count="count">字数：</label>
+                <UserName class="float-left text-4" />
+                <label class="count float-right text-4" :data-count="count">字数：</label>
             </div>
         </div>
-        <div class="designer">Designed with Quote Sharing</div>
+        <div class="designer text-4">{{ globalFooterText }}</div>
     </div>
 </template>
 

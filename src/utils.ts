@@ -6,7 +6,12 @@ import { UNSPLASH, BAIDU_FANYI } from "../conf.json";
 import { createApi } from "unsplash-js";
 import { debounce } from "lodash-es";
 import { useMediaQuery } from "@vueuse/core";
-
+import { getAuthUser, queryDocument, uploadFileByBytes } from "./firebase";
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { bgcolors } from "./constants";
+import { useUserStore } from "./store";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useLoading } from "vue-loading-overlay";
 export const unsplash = createApi({ accessKey: UNSPLASH.ACCESS_KEY });
 
 export function jsonp(url: string, callbackName = "callback") {
@@ -125,6 +130,49 @@ export function exportPic(ele: HTMLDivElement) {
         // 触发下载
         downloadLink.click();
         Promise.resolve("OK");
+    });
+}
+
+function dataURLToBlob(dataURL: string) {
+    const parts = dataURL.split(";base64,");
+    const contentType = parts[0].split(":")[1];
+    const raw = window.atob(parts[1]);
+    const rawLength = raw.length;
+    const uInt8Array = new Uint8Array(rawLength);
+    for (let i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i);
+    }
+    return new Blob([uInt8Array], { type: contentType });
+}
+
+export function genFileAndUpload(ele: HTMLDivElement, datetime: string) {
+    return new Promise((resolve, reject) => {
+        html2canvas(ele, {
+            allowTaint: true,
+            logging: true,
+            width: ele.clientWidth,
+            height: ele.clientHeight,
+            useCORS: true,
+        })
+            .then(async (canvas) => {
+                // Convert canvas to data URL
+                const dataURL = canvas.toDataURL();
+
+                // Convert data URL to Blob
+                const blob = dataURLToBlob(dataURL);
+
+                // Upload Blob to Google Cloud Storage
+                const result = await uploadFileByBytes({
+                    file: blob,
+                    filename: datetime,
+                    path: "quotes",
+                });
+
+                resolve(result);
+            })
+            .catch((error) => {
+                reject(error);
+            });
     });
 }
 
@@ -286,4 +334,151 @@ window.addEventListener("resize", setDomFontSizeDebounce); // 浏览器加入收
 export function isMobileDevice() {
     const res = useMediaQuery("(max-width: 480px)");
     return res.value.valueOf();
+}
+
+export function useRandomBgColorIndex(time: number = 5000) {
+    const bgColorIndex = ref(1);
+    let timer;
+    const autoSwitchBgColor = () => {
+        const len = bgcolors.length;
+        bgColorIndex.value = Math.floor(Math.random() * len);
+    };
+    onMounted(() => {
+        timer = setInterval(() => {
+            autoSwitchBgColor();
+        }, time);
+    });
+    onBeforeUnmount(() => {
+        clearInterval(timer!);
+        timer = null;
+    });
+
+    return bgColorIndex;
+}
+
+export function useAuthJudge(logined: () => void, logouted: () => void) {
+    const userStore = useUserStore();
+
+    const syncUserInfo = () => {
+        const user = getAuthUser()!;
+        console.log(user);
+        if (user) {
+            userStore.username = user.displayName!;
+            userStore.avatar = user.photoURL!;
+            userStore.email = user.email!;
+        }
+    };
+
+    onMounted(() => {
+        onAuthStateChanged(getAuth(), (user) => {
+            console.log(user);
+            if (user) {
+                // logined
+                logined();
+                syncUserInfo();
+            } else {
+                logouted();
+            }
+        });
+    });
+}
+
+export function useBodyBgColor() {
+    const setBodyBlack = () => {
+        document.body.style.backgroundColor = "#000000";
+    };
+
+    const setBodyWhite = () => {
+        document.body.style.backgroundColor = "#FFFFFF";
+    };
+
+    onMounted(() => {
+        setBodyBlack();
+    });
+
+    onBeforeUnmount(() => {
+        setBodyWhite();
+    });
+}
+
+export interface CurrentUser {
+    accessToken: string;
+    displayName: string;
+    email: string;
+    isAnonymous: boolean;
+    phoneNumber: string;
+    photoURL: string;
+    refreshToken: string;
+    token: string;
+    uid: string;
+    vipLevel: number;
+    exteraCardCount: number;
+}
+
+export function useQueryCurrentUser() {
+    const query = async () => {
+        const user = getAuthUser();
+        if (user) {
+            const result = await queryDocument("user", [
+                {
+                    op: "",
+                    conditions: [
+                        {
+                            field: "email",
+                            op: "==",
+                            value: user?.email!,
+                        },
+                    ],
+                },
+            ]);
+            if (result && !result?.empty) {
+                return result.docs.map((doc) => {
+                    return doc.data();
+                })[0] as CurrentUser;
+            }
+        }
+    };
+
+    return query;
+}
+
+export interface DocItem {
+    email: string;
+    datetime: string;
+    picURL: string;
+    content: string;
+    id: string;
+}
+export function useFetchCardList() {
+    const loading = useLoading();
+    const list = ref<DocItem[]>([]);
+    const fetchList = async () => {
+        const user = getAuthUser();
+        if (user) {
+            const loader = loading.show();
+            const result = await queryDocument("quotes", [
+                {
+                    op: "",
+                    conditions: [
+                        {
+                            field: "email",
+                            op: "==",
+                            value: user?.email!,
+                        },
+                    ],
+                },
+            ]);
+            if (result) {
+                list.value = result.docs.map((doc) => {
+                    return {
+                        id: doc.id,
+                        ...doc.data(),
+                    } as DocItem;
+                });
+            }
+            loader.hide();
+        }
+    };
+
+    return { fetchList, list };
 }

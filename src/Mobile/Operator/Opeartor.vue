@@ -2,7 +2,13 @@
 import { ModalsContainer, useModal } from 'vue-final-modal'
 import OperatorView from './OperatorView.vue';
 import { useMobileStore } from '../store';
-
+import { NDrawer, NDrawerContent, NTabs, NTabPane } from 'naive-ui'
+import { isMobileDevice } from '../../utils';
+import { ref } from 'vue';
+import ChooseTemps from "./ChooseTemps.vue";
+import FontColors from "./FontColors.vue";
+import BgColors from "./BgColors.vue";
+import FunIcons from "./FunIcons.vue";
 const store = useMobileStore()
 
 const { open, close, options } = useModal({
@@ -13,23 +19,58 @@ const { open, close, options } = useModal({
         },
     },
 })
+
+const drawerShow = ref(false)
+
+const openOperator = () => {
+    if (isMobileDevice()) {
+        open()
+    } else {
+        drawerShow.value = true;
+    }
+}
+
+const emit = defineEmits<{
+    (e: 'share'): void;
+}>()
 </script>
+
+
 
 <template>
     <div class="panel">
-        <button @click="open" class="float-btn" :style="`background-image:${store.activeBgcolor}`">
+        <button @click="emit(`share`)" class="float-btn-1 right-6" :style="`background-image:${store.activeBgcolor}`">
+            <i class="iconfont icon-share"></i>
+        </button>
+        <button @click="openOperator" class="float-btn-2 right-6" :style="`background-image:${store.activeBgcolor}`">
             <i class="iconfont icon-config"></i>
         </button>
+        <NDrawer v-model:show="drawerShow" :width="'28%'" placement="left">
+            <NDrawerContent title="配置面板">
+                <NTabs v-model:activeKey="store.activeTab">
+                    <NTabPane label="模板选择" name="template">
+                        <ChooseTemps />
+                    </NTabPane>
+                    <NTabPane label="背景色" name="bgColor">
+                        <BgColors />
+                    </NTabPane>
+                    <NTabPane v-if="store.temp !== 'Geek'" label="图标选择" name="icons">
+                        <FunIcons />
+                    </NTabPane>
+                    <NTabPane v-if="store.temp === 'Geek'" label="字体颜色" name="fontColor">
+                        <FontColors />
+                    </NTabPane>
+                </NTabs>
+            </NDrawerContent>
+        </NDrawer>
         <ModalsContainer />
     </div>
 </template>
 
 <style lang="less" scoped>
 .panel {
-    .float-btn {
+    .floatbtn {
         position: absolute;
-        right: 12px;
-        bottom: 12px;
         border: none;
         width: 30px;
         height: 30px;
@@ -41,8 +82,19 @@ const { open, close, options } = useModal({
         cursor: pointer;
 
         i {
-            font-size: 24px;
+            font-size: 18px;
         }
+    }
+
+    .float-btn-1 {
+        .floatbtn();
+        bottom: 60px;
+    }
+
+    .float-btn-2 {
+        .floatbtn();
+        bottom: 12px;
+
     }
 }
 </style>

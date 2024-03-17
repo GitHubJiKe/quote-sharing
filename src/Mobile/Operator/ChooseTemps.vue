@@ -17,11 +17,11 @@ const temps: TempItem[] = [
         name: '极客',
         value: 'Geek'
     },
-    {
-        name: '包豪斯',
-        value: 'Bauhaus',
-        isPending: true
-    },
+    // {
+    //     name: '包豪斯',
+    //     value: 'Bauhaus',
+    //     isPending: true
+    // },
 ]
 
 const store = useMobileStore()
