@@ -1,24 +1,63 @@
 <script setup lang="ts">
-import { onBeforeMount, ref, watchEffect } from "vue";
-import { useMobileStore } from "../store";
-import { QuillEditor } from '@vueup/vue-quill'
-import '@vueup/vue-quill/dist/vue-quill.snow.css';
-import '@vueup/vue-quill/dist/vue-quill.bubble.css';
+import { onBeforeMount, onMounted, ref, watchEffect } from "vue";
 import { CurrentUser, useQueryCurrentUser } from "../../utils";
-import { VIP_LEVEL_MAP } from "../../constants";
-import { toast } from "vue3-toastify";
+import { useMobileStore } from "../store";
+import Quill from 'quill';
 
-const editorRef = ref(null)
+
+
 const store = useMobileStore()
+const editorRef = ref<Quill>()
 
-const theme = ref<'snow' | 'bubble'>("snow")
 const currentUser = ref<CurrentUser>()
 
 const query = useQueryCurrentUser()
 
+const onContentUpdate = () => {
+    const count = getText().trim().length
+    store.count = count
+    if (count === 0) {
+        editorRef.value?.root.classList.add('ql-blank');
+    }
+}
+
+onMounted(() => {
+    const toolbarOptions = [
+        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+        // ['blockquote', 'code-block'],
+        // ['link', 'image', 'video', 'formula'],
+
+        // [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+        [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
+        // [{ 'script': 'sub' }, { 'script': 'super' }],      // superscript/subscript
+        [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
+        // [{ 'direction': 'rtl' }],                         // text direction
+
+        // [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+
+
+        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+        [{ 'font': [] }],
+        [{ 'align': [] }],
+
+        ['clean']                                         // remove formatting button
+    ];
+
+    const options = {
+        debug: 'info',
+        modules: {
+            toolbar: toolbarOptions,
+        },
+        placeholder: '请输入您要分享的内容...',
+        theme: 'snow'
+    };
+    // @ts-ignore
+    editorRef.value = new Quill('#editor', options);
+    editorRef.value.on('text-change', onContentUpdate)
+})
 
 onBeforeMount(async () => {
-    console.log(22222);
     currentUser.value = await query()!
 })
 
@@ -27,21 +66,21 @@ const vipLevel = ref(-1);
 
 watchEffect(() => {
     if (currentUser?.value) {
-        console.log('watchEffect', currentUser?.value);
-
         vipLevel.value = currentUser?.value?.vipLevel!
     }
 })
 
 const clearText = () => {
-    store.text = '';
-    // @ts-ignore
-    (editorRef.value!).setText('')
+    editorRef.value?.deleteText(0, editorRef.value?.getLength())
+    if (editorRef.value?.getLength() === 1) {
+        editorRef.value?.root.classList.add('ql-blank');
+    }
 }
+
 
 const toogleToolbar = () => {
     // @ts-ignore
-    const toolbar = editorRef.value.getToolbar()
+    const toolbar = document.body.querySelector('.ql-toolbar')! as HTMLDivElement
     if (toolbar.style.display === 'none') {
         toolbar.style.display = ''
     } else {
@@ -49,28 +88,35 @@ const toogleToolbar = () => {
     }
 }
 
+const getHTML = () => {
+    // @ts-ignore
+    return editorRef.value?.getSemanticHTML()
+}
+
+const getText = () => {
+    // @ts-ignore
+    return editorRef.value.getText()
+}
+
+const setHTML = (html: string) => {
+    editorRef.value?.setContents(editorRef.value?.clipboard.convert({ html }))
+}
+
 defineExpose({
     reset: clearText,
-    toogleToolbar
+    toogleToolbar,
+    getHTML,
+    getText,
+    setHTML
 })
 
 
 
-const contentUpdate = (text: string) => {
-    const obj = VIP_LEVEL_MAP[vipLevel.value]
-    if (store.count >= obj.maxContentLength) {
-        toast.warning(`您当前的等级只能输入${obj.maxContentLength}个字符`)
-        store.text = text.slice(0, obj.maxContentLength + (text.match(/[\n\r]/g) || []).length)
-        return;
-    }
-    store.text = text;
-}
 
 </script>
 <template>
     <div class="p-x-4">
-        <QuillEditor ref="editorRef" placeholder="点击此处输入您想分享的内容..." :theme="theme" toolbar="minimal" content-type="text"
-            :content="store.text" @update:content="contentUpdate" />
+        <div id="editor"></div>
     </div>
 </template>
 <style>

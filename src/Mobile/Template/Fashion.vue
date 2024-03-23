@@ -4,26 +4,14 @@ import { useMobileStore } from "../store.ts";
 import { storeToRefs } from 'pinia';
 import UserName from "./UserName.vue";
 import { globalFooterText } from '../../constants.ts';
+import { useEditorAPI } from "./util.ts";
 import { ref } from "vue";
 const store = useMobileStore()
 const { datetimeStr, count } = storeToRefs(store);
-const editor = ref()
+const editor = ref();
+const apiHook = useEditorAPI(editor)
+defineExpose(apiHook())
 
-const doRest = () => {
-    if (editor) {
-        editor.value.reset()
-    }
-}
-const doToogleToolbar = () => {
-    if (editor) {
-        editor.value.toogleToolbar()
-    }
-}
-
-defineExpose({
-    reset: doRest,
-    toogleToolbar: doToogleToolbar
-})
 </script>
 
 <template>

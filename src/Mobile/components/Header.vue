@@ -4,6 +4,7 @@ import { useUserStore } from '../../store';
 const emit = defineEmits<{
     (e: 'list'): void;
     (e: 'reset'): void;
+    (e: 'draft'): void;
 }>()
 
 const userStore = useUserStore()
@@ -18,8 +19,9 @@ const userStore = useUserStore()
             </label>
         </header>
         <div class="right">
-            <label class="iconfont icon-eraser" @click="emit('reset')"></label>
-            <label class="iconfont icon-list" @click="emit('list')"></label>
+            <label class="iconfont icon-draft draft" @click="emit('draft')"></label>
+            <label class="iconfont icon-eraser eraser" @click="emit('reset')"></label>
+            <label class="iconfont icon-list list" @click="emit('list')"></label>
         </div>
     </div>
 </template>
@@ -39,6 +41,26 @@ const userStore = useUserStore()
     color: white;
     padding: 12px;
 
+    .draft::after {
+        content: '草稿';
+        font-size: 0.5rem;
+        display: block;
+        text-align: center;
+    }
+
+    .eraser::after {
+        content: '清空';
+        font-size: 0.5rem;
+        display: block;
+        text-align: center;
+    }
+
+    .list::after {
+        content: '列表';
+        font-size: 0.5rem;
+        display: block;
+        text-align: center;
+    }
 
     label {
         font-size: 24px;

@@ -13,6 +13,9 @@ import "vue-loading-overlay/dist/css/index.css";
 import Vue3Toasity from "vue3-toastify";
 import "vue3-toastify/dist/index.css";
 import { router } from "./Mobile/routes";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
 
 const firebaseApp = initApp();
 const vfm = createVfm();

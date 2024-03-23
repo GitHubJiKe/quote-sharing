@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, } from 'vue';
 import { useFetchCardList, isMobileDevice, useAuthJudge, useBodyBgColor, useQueryCurrentUser, useRandomBgColorIndex, CurrentUser } from '../../utils';
 import { useRouter } from "vue-router";
 import { SHINING_TEXT, VIP_LEVEL_MAP, bgcolors } from '../../constants'
@@ -23,9 +23,9 @@ const bg = computed(() => {
 
 useAuthJudge(async () => {
     // logined
-    currentUser.value = (await query())!
+    currentUser.value = await query()!
     await fetchList()
-    levelObj.value = VIP_LEVEL_MAP[currentUser.value.vipLevel]
+    levelObj.value = VIP_LEVEL_MAP[currentUser.value!.vipLevel]
 }, () => {
     router.replace('/')
 })
@@ -39,7 +39,6 @@ const gotoShare = () => {
 
 
 const levelObj = ref({
-    maxContentLength: 40,
     listMaxCount: 0,
     templateCount: 1,
     money: 0,
