@@ -12,6 +12,7 @@ import { bgcolors } from "./constants";
 import { useUserStore } from "./store";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useLoading } from "vue-loading-overlay";
+import { orderBy } from "firebase/firestore";
 
 export const unsplash = createApi({ accessKey: UNSPLASH.ACCESS_KEY });
 
@@ -132,7 +133,6 @@ export function genFileAndUpload(ele: HTMLDivElement, datetime: string) {
             .then(async (canvas) => {
                 // Convert canvas to data URL
                 const dataURL = canvas.toDataURL();
-
                 // Convert data URL to Blob
                 const blob = dataURLToBlob(dataURL);
 
@@ -335,7 +335,6 @@ export function useAuthJudge(logined: () => void, logouted: () => void) {
 
     const syncUserInfo = () => {
         const user = getAuthUser()!;
-        console.log("syncUserInfo", user);
         if (user) {
             userStore.username = user.displayName!;
             userStore.avatar = user.photoURL!;
@@ -345,7 +344,6 @@ export function useAuthJudge(logined: () => void, logouted: () => void) {
 
     onMounted(() => {
         onAuthStateChanged(getAuth(), async (user) => {
-            console.log("onAuthStateChanged", user);
             if (user) {
                 // logined
                 logined();
@@ -388,7 +386,6 @@ export interface CurrentUser {
     vipLevel: number;
     exteraCardCount: number;
 }
-// vipLevel::
 export function useQueryCurrentUser() {
     return async () => {
         const user = getAuthUser()!;
@@ -426,18 +423,35 @@ export function useFetchCardList() {
         const user = getAuthUser();
         if (user) {
             const loader = loading.show();
-            const result = await queryDocument("quotes", [
-                {
-                    op: "",
-                    conditions: [
-                        {
-                            field: "email",
-                            op: "==",
-                            value: user?.email!,
-                        },
-                    ],
-                },
-            ]);
+            const isTest = location.href.includes("localhost");
+            const conditions = isTest
+                ? [
+                      {
+                          field: "email",
+                          op: "==",
+                          value: user?.email!,
+                      },
+                      {
+                          field: "env",
+                          op: "==",
+                          value: "test",
+                      },
+                  ]
+                : [
+                      {
+                          field: "email",
+                          op: "==",
+                          value: user?.email!,
+                      },
+                  ];
+            const result = await queryDocument(
+                "quotes",
+                [
+                    // @ts-ignore
+                    { op: isTest ? "and" : "", conditions },
+                ],
+                orderBy("datetime", "desc")
+            );
             if (result) {
                 list.value = result.docs.map((doc) => {
                     return {

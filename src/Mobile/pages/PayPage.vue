@@ -77,7 +77,6 @@ const VIP3 = VIP_LEVEL_MAP[3]
                         功能：
                     </p>
                     <ul class="text-3">
-                        <li>最长输入文本<b class="text-6 p-x-1 text-white">{{ VIP1.maxContentLength }}</b>字符</li>
                         <li>最多可保存<b class="text-6 p-x-1 text-white">{{ VIP1.listMaxCount }}</b>个在线卡片</li>
                         <li>可选择<b class="text-6 p-x-1 text-white">{{ VIP1.templateCount }}</b>种模板</li>
                     </ul>
@@ -94,7 +93,6 @@ const VIP3 = VIP_LEVEL_MAP[3]
                         功能：
                     </p>
                     <ul class="text-3">
-                        <li>最长输入文本<b class="text-6 p-x-1 text-white">{{ VIP2.maxContentLength }}</b>字符</li>
                         <li>最多可保存<b class="text-6 p-x-1 text-white">{{ VIP2.listMaxCount }}</b>个在线卡片</li>
                         <li>可选择<b class="text-6 p-x-1 text-white">{{ VIP2.templateCount }}</b>种模板</li>
                     </ul>
@@ -111,7 +109,6 @@ const VIP3 = VIP_LEVEL_MAP[3]
                         功能：
                     </p>
                     <ul class="text-3">
-                        <li>最长输入文本<b class="text-6 p-x-1 text-white">{{ VIP3.maxContentLength }}</b>字符</li>
                         <li>最多可保存<b class="text-6 p-x-1 text-white">{{ VIP3.listMaxCount }}</b>个在线卡片</li>
                         <li>可选择<b class="text-6 p-x-1 text-white">{{ VIP3.templateCount }}</b>种模板</li>
                     </ul>

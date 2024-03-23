@@ -35,11 +35,11 @@ body {
 /* 在线链接服务仅供平台体验和调试使用，平台不承诺服务的稳定性，企业客户需下载字体包自行发布使用并做好备份。 */
 @font-face {
     font-family: "iconfont"; /* Project id 4451165 */
-    src: url("//at.alicdn.com/t/c/font_4451165_j39og8gl4pr.woff2?t=1710648687920")
+    src: url("//at.alicdn.com/t/c/font_4451165_9lrxmil5d1i.woff2?t=1711168269370")
             format("woff2"),
-        url("//at.alicdn.com/t/c/font_4451165_j39og8gl4pr.woff?t=1710648687920")
+        url("//at.alicdn.com/t/c/font_4451165_9lrxmil5d1i.woff?t=1711168269370")
             format("woff"),
-        url("//at.alicdn.com/t/c/font_4451165_j39og8gl4pr.ttf?t=1710648687920")
+        url("//at.alicdn.com/t/c/font_4451165_9lrxmil5d1i.ttf?t=1711168269370")
             format("truetype");
 }
 
@@ -50,7 +50,9 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
-
+.icon-draft::before {
+    content: "\e605";
+}
 .icon-arrow::before {
     content: "\e645";
 }

@@ -61,7 +61,6 @@ async function setDocument({ entity, path, entityObj }: AddDocOpt) {
 
 async function addDocument({ entity, entityObj }: Omit<AddDocOpt, "path">) {
     try {
-        console.log(entity, entityObj);
         return await addDoc(collection(getDB(), entity), entityObj);
     } catch (e) {
         console.error("Error adding document: ", e);
@@ -72,7 +71,6 @@ async function getDocument<T>({ entity }: Pick<AddDocOpt, "entity">) {
     const data: T[] = [];
     try {
         const querySnapshot = await getDocs(collection(getDB(), entity));
-        console.log(querySnapshot);
         querySnapshot.forEach((doc) => {
             data.push({
                 ...doc.data(),
@@ -113,7 +111,6 @@ async function listAllImages(path: string) {
     // Find all the prefixes and items.
     listAll(listRef)
         .then((res) => {
-            console.log("res:::", res);
             res.prefixes.forEach((folderRef) => {
                 console.log("folderRef:::", folderRef);
                 // All the prefixes under listRef.
@@ -199,7 +196,11 @@ interface Condition {
     op: "and" | "or" | "";
 }
 
-async function queryDocument(entity: string, conditions: Condition[]) {
+async function queryDocument(
+    entity: string,
+    conditions: Condition[],
+    filter = null
+) {
     // Create a reference to the cities collection
     const entityRef = collection(getDB(), entity);
     const con = conditions.map((condition) => {
@@ -225,8 +226,11 @@ async function queryDocument(entity: string, conditions: Condition[]) {
             });
         }
     });
-    // @ts-ignore
-    const q = query(entityRef, ...con);
+    const q = filter
+        ? // @ts-ignore
+          query(entityRef, ...con, filter)
+        : // @ts-ignore
+          query(entityRef, ...con);
     try {
         const querySnapshot = await getDocs(q);
         return querySnapshot;
