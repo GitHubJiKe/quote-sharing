@@ -443,6 +443,11 @@ export function useFetchCardList() {
                           op: "==",
                           value: user?.email!,
                       },
+                      {
+                          field: "env",
+                          op: "!=",
+                          value: "test",
+                      },
                   ];
             const result = await queryDocument(
                 "quotes",
