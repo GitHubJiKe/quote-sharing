@@ -269,6 +269,18 @@ export const funIcons = [
         name: "写作",
         value: "writing",
     },
+    {
+        name: "读书",
+        value: "reading",
+    },
+    {
+        name: "思考",
+        value: "think",
+    },
+    {
+        name: "邪恶",
+        value: "evil",
+    },
 ];
 
 export const operations = [

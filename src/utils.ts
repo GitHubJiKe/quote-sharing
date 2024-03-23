@@ -86,7 +86,7 @@ export const fetchTranslate = (txt: string, from = "zh", to = "en") => {
     });
 };
 
-export function exportPic(ele: HTMLDivElement) {
+export function exportPic(ele: HTMLDivElement, fileName: string = "灵光一闪") {
     // 假设你想要将ID为"domElement"的DOM元素转换为图片
     return html2canvas(ele, {
         allowTaint: true,
@@ -101,7 +101,7 @@ export function exportPic(ele: HTMLDivElement) {
         // 创建一个链接元素用于下载
         const downloadLink = document.createElement("a");
         downloadLink.href = image;
-        downloadLink.download = "分享.png";
+        downloadLink.download = `${fileName}.png`;
 
         // 触发下载
         downloadLink.click();

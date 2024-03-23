@@ -6,10 +6,12 @@ type TempItem = {
     isPending?: boolean;
 }
 const temps: TempItem[] = [
+
     {
         name: '简洁',
         value: 'Clean'
-    }, {
+    },
+    {
         name: '时尚',
         value: 'Fashion'
     },
@@ -17,20 +19,16 @@ const temps: TempItem[] = [
         name: '极客',
         value: 'Geek'
     },
-    // {
-    //     name: '包豪斯',
-    //     value: 'Bauhaus',
-    //     isPending: true
-    // },
+    {
+        name: '轻盈',
+        value: 'Lighter',
+    },
 ]
 
 const store = useMobileStore()
 
 
 const choose = (item: TempItem) => {
-    if (item.isPending) {
-        return alert("开发中")
-    }
     store.temp = item.value
 }
 
