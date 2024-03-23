@@ -12,16 +12,17 @@ const userStore = useUserStore()
 
 <template>
     <div class="header">
-        <header class="left flex flex-col">
+        <header class="left flex flex-col" v-if="!userStore.isAnonymous">
             <img :src="userStore.avatar" alt="avatar" srcset="" class="avatar">
             <label>
                 {{ userStore.username }}
             </label>
         </header>
+        <div v-else>👏🏻欢迎试用👏🏻</div>
         <div class="right">
             <label class="iconfont icon-draft draft" @click="emit('draft')"></label>
             <label class="iconfont icon-eraser eraser" @click="emit('reset')"></label>
-            <label class="iconfont icon-list list" @click="emit('list')"></label>
+            <label class="iconfont icon-list list" v-if="!userStore.isAnonymous" @click="emit('list')"></label>
         </div>
     </div>
 </template>

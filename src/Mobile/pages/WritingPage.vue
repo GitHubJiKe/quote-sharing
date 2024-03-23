@@ -6,6 +6,7 @@ import { useMobileStore } from '../store'
 import Clean from '../Template/Clean.vue';
 import Fashion from '../Template/Fashion.vue';
 import Geek from '../Template/Geek.vue';
+import Lighter from '../Template/Lighter.vue';
 import { addDocument, } from "../../firebase";
 import { useUserStore } from "../../store";
 import { useLoading } from 'vue-loading-overlay'
@@ -13,7 +14,6 @@ import { toast } from 'vue3-toastify';
 import { useRouter } from "vue-router";
 import { computed, nextTick, onBeforeMount, ref } from "vue";
 import { VIP_LEVEL_MAP } from "../../constants";
-
 
 const PICTURE_HOST = `https://firebasestorage.googleapis.com/v0/b/talk-is-cheap-6695e.appspot.com/o/quotes${encodeURIComponent("/")}`
 
@@ -23,12 +23,14 @@ const store = useMobileStore()
 const cleanTemp = ref()
 const fashionTemp = ref()
 const geekTemp = ref()
-
+const lighterTemp = ref()
+const isAnonymous = userStore.isAnonymous
 const refMap = computed(() => {
     return {
         Clean: cleanTemp,
         Fashion: fashionTemp,
-        Geek: geekTemp
+        Geek: geekTemp,
+        Lighter: lighterTemp
     }
 })
 const { fetchList, list } = useFetchCardList()
@@ -37,8 +39,10 @@ const currentUser = ref<CurrentUser>()
 const query = useQueryCurrentUser()
 
 onBeforeMount(async () => {
-    currentUser.value = await query()!
-    await fetchList()
+    if (!isAnonymous) {
+        currentUser.value = await query()!
+        await fetchList()
+    }
     recovertDraft()
 })
 
@@ -96,14 +100,27 @@ const onShare = () => {
         store.datetimeStr = currentDate.toLocaleString();
         const loading = $loading.show()
         try {
+
+            if (isAnonymous) {
+                const name = window.prompt('请输入文件名')!
+                exportPic(preview, name).then(() => {
+                    toogleToolbar();
+                });
+                return;
+            }
+
             const { vipLevel, exteraCardCount } = currentUser.value!;
             if (vipLevel !== 0) {
                 if (list.value.length === (VIP_LEVEL_MAP[vipLevel].listMaxCount + exteraCardCount)) {
+                    const name = window.prompt('请输入文件名')!
                     toast.info("您已达到存储上线，请升级存储")
-                    exportPic(preview)
+                    exportPic(preview, name).then(() => {
+                        toogleToolbar();
+                    });
                     return;
                 }
             }
+
             const res = await genFileAndUpload(preview, currentDate.getTime().toString()); //
             const { email } = userStore;
             const { datetimeStr } = store;
@@ -139,11 +156,13 @@ const router = useRouter()
 
 const isLogined = ref(false);
 
-useAuthJudge(() => {
-    isLogined.value = true
-}, () => {
-    router.back()
-})
+if (!isAnonymous) {
+    useAuthJudge(() => {
+        isLogined.value = true
+    }, () => {
+        router.back()
+    })
+}
 
 const gotoList = () => {
     router.push('/list')
@@ -163,11 +182,12 @@ const onDraft = () => {
 <template>
     <div class="bg-black h-dvh mx-auto overflow-x-hidden" :class="{ 'w-42%': !isMobile, 'w-90%': isMobile }">
         <div :class="{ 'quote-sharing': isMobile, 'quote-sharing-web': !isMobile }" class="m-t-4">
-            <div class="box" v-if="isLogined">
+            <div class="box" v-if="isLogined || isAnonymous">
                 <Header @list="gotoList" :class="{ 'web-header': !isMobile }" @reset="doRest" @draft="onDraft" />
                 <Clean v-if="store.temp === 'Clean'" ref="cleanTemp" />
                 <Fashion v-if="store.temp === 'Fashion'" ref="fashionTemp" />
                 <Geek v-if="store.temp === 'Geek'" ref="geekTemp" />
+                <Lighter v-if="store.temp === 'Lighter'" ref="lighterTemp" />
             </div>
             <Opeartor @share="onShare" />
         </div>

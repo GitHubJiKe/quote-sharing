@@ -44,6 +44,7 @@ const { open, close } = useModal({
             close()
             const logined = await loginByGoogle();
             if (logined) {
+                userStore.isAnonymous = false;
                 router.push('/writing')
             }
         },
@@ -84,6 +85,11 @@ onMounted(() => {
     signInSuccessWithEmail()
 })
 
+const goAnonymous = () => {
+    userStore.isAnonymous = true;
+    router.push('/writing')
+}
+
 </script>
 
 <template>
@@ -93,7 +99,10 @@ onMounted(() => {
             <h3 :style="`background-image:${bg}`" class="p-4 header-title">{{ SHINING_TEXT }}
             </h3>
             <Title :bg="bg" v-if="!isMobile"></Title>
-            <div @click="goLogin" class="btn p-4 cursor-pointer" :style="`background-image:${bg}`">立即登录</div>
+            <div class="flex gap-2">
+                <div @click="goAnonymous" class="btn p-4 cursor-pointer bg-coolGray text-black">匿名使用</div>
+                <div @click="goLogin" class="btn p-4 cursor-pointer" :style="`background-image:${bg}`">立即登录</div>
+            </div>
         </header>
         <main class="flex-1 content" :style="`background-image:${bg}`">
         </main>

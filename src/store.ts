@@ -5,5 +5,6 @@ export const useUserStore = defineStore("user", {
         avatar: "",
         username: "",
         email: "",
+        isAnonymous: false,
     }),
 });
