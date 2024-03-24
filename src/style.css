@@ -14,6 +14,15 @@ body {
     padding: 0;
     margin: 0;
     border: none;
+    transition: background-color 0.5s ease;
+}
+body.light {
+    background-color: #fff;
+    color: #000;
+}
+body.dark {
+    background-color: #303030;
+    color: #fff;
 }
 
 #app {
@@ -35,11 +44,11 @@ body {
 /* 在线链接服务仅供平台体验和调试使用，平台不承诺服务的稳定性，企业客户需下载字体包自行发布使用并做好备份。 */
 @font-face {
     font-family: "iconfont"; /* Project id 4451165 */
-    src: url("//at.alicdn.com/t/c/font_4451165_kuku6dkcms.woff2?t=1711190724109")
+    src: url("//at.alicdn.com/t/c/font_4451165_ugiw7fmib9s.woff2?t=1711272793170")
             format("woff2"),
-        url("//at.alicdn.com/t/c/font_4451165_kuku6dkcms.woff?t=1711190724109")
+        url("//at.alicdn.com/t/c/font_4451165_ugiw7fmib9s.woff?t=1711272793170")
             format("woff"),
-        url("//at.alicdn.com/t/c/font_4451165_kuku6dkcms.ttf?t=1711190724109")
+        url("//at.alicdn.com/t/c/font_4451165_ugiw7fmib9s.ttf?t=1711272793170")
             format("truetype");
 }
 
@@ -50,8 +59,27 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
-.icon-evil::before {
-    content: "\e718";
+
+.icon-sun::before {
+    content: "\e603";
+}
+
+.icon-moon::before {
+    content: "\ece9";
+}
+
+.icon-heart::before {
+    content: "\e60b";
+}
+
+.icon-bell::before {
+    content: "\e7c4";
+}
+.icon-refresh::before {
+    content: "\e71e";
+}
+.icon-camera::before {
+    content: "\e7d7";
 }
 .icon-think::before {
     content: "\e65a";
