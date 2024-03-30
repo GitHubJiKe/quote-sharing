@@ -45,7 +45,7 @@ useAuthJudge(async () => {
 </script>
 
 <template>
-    <div class="w-140 mx-auto" :class="{ 'w-full': isMobile, 'w-140': !isMobile }">
+    <div class="mx-auto" :class="{ 'w-full': isMobile, 'w-140': !isMobile }">
         <div class="h-76 bg-cover bg-center flex flex-col justify-between pt-2 mb-10"
             :style="`background-image:url(${bgImg})`">
             <div class="p-b-3 px-5 flex justify-between items-center">

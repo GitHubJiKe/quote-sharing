@@ -17,6 +17,7 @@ export const useMobileStore = defineStore("mobile", {
         fontColor: fontColors[0],
         datetimeStr: new Date().toLocaleString(),
         count: 0,
+        text: "",
     }),
     getters: {
         authorLineShow(s) {

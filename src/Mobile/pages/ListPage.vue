@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, } from 'vue';
-import { useFetchCardList, isMobileDevice, useAuthJudge, useBodyBgColor, useQueryCurrentUser, useRandomBgColorIndex, CurrentUser } from '../../utils';
+import { useFetchCardList, isMobileDevice, useAuthJudge, useQueryCurrentUser, useRandomBgColorIndex, CurrentUser } from '../../utils';
 import { useRouter } from "vue-router";
 import { SHINING_TEXT, VIP_LEVEL_MAP, bgcolors } from '../../constants'
 import { useUserStore } from '../../store';
@@ -12,7 +12,6 @@ const router = useRouter()
 const currentUser = ref<CurrentUser>();
 const query = useQueryCurrentUser()
 
-useBodyBgColor()
 
 
 const { fetchList, list } = useFetchCardList()

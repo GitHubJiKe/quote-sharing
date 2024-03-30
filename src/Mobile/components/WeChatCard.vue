@@ -11,11 +11,17 @@ const showAll = ref(false);
 
 const getNames = () => fakeNames(Math.floor(Math.random() * 30));
 
+const names = getNames()
+
 const toogleShowAll = () => {
     showAll.value = !showAll.value;
 }
 
 const isMobile = isMobileDevice()
+
+const fakerComment = () => {
+    return ['真酷！😎', '真棒！👍🏻', '真帅！🐴'][Math.floor(Math.random() * 3)]
+}
 </script>
 
 <template>
@@ -57,14 +63,13 @@ const isMobile = isMobileDevice()
                 :class="{ 'bg-wechat-gray-dark': isDark, 'bg-wechat-gray': !isDark }">
                 <div class="flex flex-wrap items-center">
                     <i class="iconfont icon-heart color-wechat-primary text-6 mr-2"></i>
-                    <label class="color-wechat-primary heart-name cursor-pointer" v-for="name in getNames()"
-                        :key="name">
+                    <label class="color-wechat-primary heart-name cursor-pointer" v-for="name in names" :key="name">
                         {{ name }}
                     </label>
                 </div>
                 <div class="mt-2">
-                    <label class="color-wechat-primary comment-name cursor-pointer">小明</label>
-                    真帅！
+                    <label class="color-wechat-primary comment-name cursor-pointer">{{ names[0] }}</label>
+                    {{ fakerComment() }}
                 </div>
             </div>
         </div>
