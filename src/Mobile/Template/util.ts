@@ -3,7 +3,7 @@ export function useEditorAPI(
         | {
               value: {
                   reset: () => void;
-                  toogleToolbar: () => void;
+                  toggleToolbar: () => void;
                   getHTML: () => any;
                   getText: () => any;
                   setHTML: (arg0: string) => void;
@@ -19,7 +19,7 @@ export function useEditorAPI(
         };
         const doToogleToolbar = () => {
             if (editor) {
-                editor.value.toogleToolbar();
+                editor.value.toggleToolbar();
             }
         };
         const getHTML = () => {
@@ -42,7 +42,7 @@ export function useEditorAPI(
 
         return {
             reset: doRest,
-            toogleToolbar: doToogleToolbar,
+            toggleToolbar: doToogleToolbar,
             getHTML,
             getText,
             setHTML,

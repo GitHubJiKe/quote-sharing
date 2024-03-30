@@ -11,7 +11,9 @@ const { datetimeStr, count, } = storeToRefs(store);
 const editor = ref();
 const apiHook = useEditorAPI(editor)
 defineExpose(apiHook())
-
+const emit = defineEmits<{
+    (e: 'open'): void;
+}>();
 </script>
 
 <template>
@@ -28,7 +30,7 @@ defineExpose(apiHook())
                 </div>
             </div>
             <div class="header py-1" :style="`background-image:${store.activeBgcolor}`">
-                <i class="iconfont icon" :class="`icon-${store.currentIcon}`"></i>
+                <i class="iconfont icon cursor-pointer" :class="`icon-${store.currentIcon}`" @click="emit('open')"></i>
             </div>
             <TextEditor ref="editor" />
             <div class="footer">

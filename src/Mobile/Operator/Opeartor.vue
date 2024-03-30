@@ -6,9 +6,7 @@ import { NDrawer, NDrawerContent, NTabs, NTabPane } from 'naive-ui'
 import { isMobileDevice } from '../../utils';
 import { ref } from 'vue';
 import ChooseTemps from "./ChooseTemps.vue";
-import FontColors from "./FontColors.vue";
 import BgColors from "./BgColors.vue";
-import FunIcons from "./FunIcons.vue";
 const store = useMobileStore()
 
 const { open, close, options } = useModal({
@@ -53,12 +51,6 @@ const emit = defineEmits<{
                     </NTabPane>
                     <NTabPane label="背景色" name="bgColor">
                         <BgColors />
-                    </NTabPane>
-                    <NTabPane v-if="store.temp !== 'Geek'" label="图标选择" name="icons">
-                        <FunIcons />
-                    </NTabPane>
-                    <NTabPane v-if="store.temp === 'Geek'" label="字体颜色" name="fontColor">
-                        <FontColors />
                     </NTabPane>
                 </NTabs>
             </NDrawerContent>

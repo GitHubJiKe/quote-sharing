@@ -13,6 +13,14 @@ import { useUserStore } from "./store";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useLoading } from "vue-loading-overlay";
 import { orderBy } from "firebase/firestore";
+import { fakerZH_CN } from "@faker-js/faker";
+export function fakeNames(count: number) {
+    const names: string[] = [];
+    for (let index = 0; index < count; index++) {
+        names.push(fakerZH_CN.person.firstName());
+    }
+    return Array.from(new Set(names));
+}
 
 export const unsplash = createApi({ accessKey: UNSPLASH.ACCESS_KEY });
 
@@ -453,7 +461,7 @@ export function useFetchCardList() {
                 "quotes",
                 [
                     // @ts-ignore
-                    { op: isTest ? "and" : "", conditions },
+                    { op: isTest ? "and" : "and", conditions },
                 ],
                 orderBy("datetime", "desc")
             );

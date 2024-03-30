@@ -4,7 +4,11 @@ import { logPageView } from "../../firebase";
 const routes: RouteRecordRaw[] = [
     { path: "/", component: () => import("../pages/LandingPage.vue") },
     { path: "/writing", component: () => import("../pages/WritingPage.vue") },
-    { path: "/list", component: () => import("../pages/ListPage.vue") },
+    // { path: "/list", component: () => import("../pages/ListPage.vue") },
+    {
+        path: "/list",
+        component: () => import("../pages/ListPageWeChatStyle.vue"),
+    },
     { path: "/payment", component: () => import("../pages/PayPage.vue") },
 ];
 

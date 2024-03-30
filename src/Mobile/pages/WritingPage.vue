@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CurrentUser, exportPic, genFileAndUpload, isMobileDevice, useAuthJudge, useBodyBgColor, useFetchCardList, useQueryCurrentUser } from "../../utils";
+import { CurrentUser, exportPic, genFileAndUpload, isMobileDevice, useAuthJudge, useFetchCardList, useQueryCurrentUser } from "../../utils";
 import Header from '../components/Header.vue';
 import Opeartor from "../Operator/Opeartor.vue";
 import { useMobileStore } from '../store'
@@ -12,8 +12,10 @@ import { useUserStore } from "../../store";
 import { useLoading } from 'vue-loading-overlay'
 import { toast } from 'vue3-toastify';
 import { useRouter } from "vue-router";
-import { computed, nextTick, onBeforeMount, ref } from "vue";
+import { computed, nextTick, onBeforeMount, ref, watch } from "vue";
 import { VIP_LEVEL_MAP } from "../../constants";
+import { ModalsContainer, useModal } from 'vue-final-modal'
+import IconsView from '../components/IconsView.vue'
 
 const PICTURE_HOST = `https://firebasestorage.googleapis.com/v0/b/talk-is-cheap-6695e.appspot.com/o/quotes${encodeURIComponent("/")}`
 
@@ -43,21 +45,19 @@ onBeforeMount(async () => {
         currentUser.value = await query()!
         await fetchList()
     }
-    recovertDraft()
+
 })
 
-const recovertDraft = () => {
-    const htmlText = localStorage.getItem('ShiningText');
+const recovertDraft = (htmlText: string) => {
     if (htmlText) {
         // @ts-ignore
         const _ref = refMap.value[store.temp];
-        if (_ref) {
+        if (_ref && _ref.value && _ref.value.setHTML) {
             _ref.value.setHTML(htmlText)
         }
     }
 }
 
-useBodyBgColor()
 
 const doRest = () => {
     // @ts-ignore
@@ -66,10 +66,10 @@ const doRest = () => {
     _ref.value.reset()
 }
 
-const toogleToolbar = () => {
+const toggleToolbar = () => {
     // @ts-ignore
     const _ref = refMap.value[store.temp];
-    _ref.value.toogleToolbar()
+    _ref.value.toggleToolbar()
 }
 
 const getHTML = () => {
@@ -90,7 +90,7 @@ const onShare = () => {
     if (text.trim().length === 0) {
         return toast.warning('请输入分享内容')
     }
-    toogleToolbar()
+    toggleToolbar()
 
     nextTick(async () => {
         const preview = document.querySelector("#content")! as HTMLDivElement;
@@ -104,7 +104,7 @@ const onShare = () => {
             if (isAnonymous) {
                 const name = window.prompt('请输入文件名')!
                 exportPic(preview, name).then(() => {
-                    toogleToolbar();
+                    toggleToolbar();
                 });
                 return;
             }
@@ -115,7 +115,7 @@ const onShare = () => {
                     const name = window.prompt('请输入文件名')!
                     toast.info("您已达到存储上线，请升级存储")
                     exportPic(preview, name).then(() => {
-                        toogleToolbar();
+                        toggleToolbar();
                     });
                     return;
                 }
@@ -124,8 +124,14 @@ const onShare = () => {
             const res = await genFileAndUpload(preview, currentDate.getTime().toString()); //
             const { email } = userStore;
             const { datetimeStr } = store;
-            // @ts-ignore
-            const data = { email, content: html, datetime: datetimeStr, picURL: `${PICTURE_HOST}${res.ref['name']}?alt=media` }
+            const data = {
+                email,
+                content: html,
+                datetime: datetimeStr,
+                // @ts-ignore
+                picURL: `${PICTURE_HOST}${res.ref['name']}?alt=media`,
+                env: location.host.includes('localhost') ? 'test' : 'prod'
+            }
 
             const saveRes = await addDocument({ entity: 'quotes', entityObj: data });
 
@@ -134,7 +140,7 @@ const onShare = () => {
             toast.success("保存成功，即将前往列表页面", {
                 position: toast.POSITION.TOP_CENTER,
                 onClose: () => {
-                    toogleToolbar();
+                    toggleToolbar();
                     doRest()
                     router.push('/list')
                 }
@@ -170,27 +176,64 @@ const gotoList = () => {
 
 
 const onDraft = () => {
+    const htmlText = localStorage.getItem('ShiningText')!;
+    if (htmlText) {
+        return recovertDraft(htmlText)
+    }
+
+    toast.warning('没有草稿内容')
+}
+
+const doDraft = () => {
     const text = getText() as string;
     if (text.trim().length === 0) {
-        return toast.warning('请输入分享内容')
+        return;
     }
     localStorage.setItem('ShiningText', getHTML())
 }
 
+const { open, close } = useModal({
+    component: IconsView,
+    attrs: {
+        onClose() {
+            close();
+        },
+        onSelect(icon: string) {
+            console.log(icon);
+            store.currentIcon = icon;
+        }
+    }
+})
+
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+        doDraft()
+    }
+})
+
+watch(() => store.temp, () => {
+    store.text && recovertDraft(store.text)
+})
+
+const styleStr = computed(() => {
+    return isMobile ? '' : 'min-width: 414px;'
+})
 </script>
 
 <template>
-    <div class="bg-black h-dvh mx-auto overflow-x-hidden" :class="{ 'w-42%': !isMobile, 'w-90%': isMobile }">
+    <div class="bg-black h-dvh mx-auto overflow-x-hidden" :class="{ 'w-42%': !isMobile, 'w-100%': isMobile }"
+        :style="styleStr">
         <div :class="{ 'quote-sharing': isMobile, 'quote-sharing-web': !isMobile }" class="m-t-4">
             <div class="box" v-if="isLogined || isAnonymous">
                 <Header @list="gotoList" :class="{ 'web-header': !isMobile }" @reset="doRest" @draft="onDraft" />
-                <Clean v-if="store.temp === 'Clean'" ref="cleanTemp" />
-                <Fashion v-if="store.temp === 'Fashion'" ref="fashionTemp" />
-                <Geek v-if="store.temp === 'Geek'" ref="geekTemp" />
-                <Lighter v-if="store.temp === 'Lighter'" ref="lighterTemp" />
+                <Clean v-if="store.temp === 'Clean'" ref="cleanTemp" @open="open" />
+                <Fashion v-if="store.temp === 'Fashion'" ref="fashionTemp" @open="open" />
+                <Geek v-if="store.temp === 'Geek'" ref="geekTemp" @open="open" />
+                <Lighter v-if="store.temp === 'Lighter'" ref="lighterTemp" @open="open" />
             </div>
             <Opeartor @share="onShare" />
         </div>
+        <ModalsContainer />
     </div>
 </template>
 

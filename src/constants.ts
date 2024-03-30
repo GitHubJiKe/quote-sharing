@@ -289,10 +289,6 @@ export const operations = [
         value: "template",
     },
     {
-        name: "图标",
-        value: "icons",
-    },
-    {
         name: "字色",
         value: "fontColor",
     },

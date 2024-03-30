@@ -11,7 +11,9 @@ const { datetimeStr, count, } = storeToRefs(store);
 const editor = ref();
 const apiHook = useEditorAPI(editor)
 defineExpose(apiHook())
-
+const emit = defineEmits<{
+    (e: 'open'): void;
+}>();
 </script>
 
 <template>
@@ -22,9 +24,10 @@ defineExpose(apiHook())
                 <div class="datetime text-4 text-white">
                     <span>{{ datetimeStr }}</span>
                 </div>
-                <i class="iconfont text-8 m-r-2" :class="`icon-${store.currentIcon}`"></i>
+                <i class="iconfont text-8 m-r-2 cursor-pointer" :class="`icon-${store.currentIcon}`"
+                    @click="emit('open')"></i>
             </div>
-            <TextEditor ref="editor" />
+            <TextEditor ref="editor" class="lighter" />
             <div class="footer">
                 <UserName class="float-left text-4 text-white" />
                 <label class="count float-right text-4 text-white" :data-count="count">字数：</label>
@@ -105,6 +108,22 @@ defineExpose(apiHook())
         padding-bottom: 8px;
         border-bottom-left-radius: 12px;
         border-bottom-right-radius: 12px;
+    }
+
+
+}
+</style>
+<style lang="less">
+.lighter {
+
+    .w-e-text-container {
+        background-color: transparent !important;
+        color: #fff !important;
+    }
+
+    .w-e-bar {
+        background-color: transparent !important;
+        color: #000 !important;
     }
 }
 </style>
