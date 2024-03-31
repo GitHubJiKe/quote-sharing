@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { nextTick, onBeforeMount, onBeforeUnmount, ref, shallowRef, watchEffect } from "vue";
+import { onBeforeMount, onBeforeUnmount, ref, shallowRef, watchEffect } from "vue";
 import { CurrentUser, useQueryCurrentUser } from "../../utils";
 import { useMobileStore } from "../store";
 // @ts-ignore
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import '@wangeditor/editor/dist/css/style.css'
-import { IToolbarConfig, DomEditor } from '@wangeditor/editor'
+import { IToolbarConfig } from '@wangeditor/editor'
 
 const store = useMobileStore()
 const editorRef = shallowRef<Editor>()
@@ -83,11 +83,6 @@ const mode = 'defalut'
 
 const handleCreated = (editor: any) => {
     editorRef.value = editor;
-    nextTick(() => {
-
-        const toolbar = DomEditor.getToolbar(editor)!
-        console.log(toolbar.getConfig());
-    })
 }
 
 const showToolbar = ref(true);
