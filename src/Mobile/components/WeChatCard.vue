@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useUserStore } from '../../store';
 import { fakeNames, isMobileDevice } from '../../utils';
 import { NImage } from "naive-ui";
@@ -19,9 +19,19 @@ const toogleShowAll = () => {
 
 const isMobile = isMobileDevice()
 
-const fakerComment = () => {
+const fakerComment = computed(() => {
     return ['真酷！😎', '真棒！👍🏻', '真帅！🐴'][Math.floor(Math.random() * 3)]
-}
+})
+
+const contentRef = ref();
+const showToggleAll = ref(false);
+
+onMounted(() => {
+    const textContainer = (contentRef.value as HTMLDivElement)
+    const computedStyle = window.getComputedStyle(textContainer);
+    showToggleAll.value = Math.ceil(parseFloat(computedStyle.height) / parseFloat(computedStyle.lineHeight)) >= 4;
+})
+
 </script>
 
 <template>
@@ -35,10 +45,10 @@ const fakerComment = () => {
             <div class="fw-500 text-4 color-wechat-primary">
                 {{ userStore.username }}
             </div>
-            <div v-html="item.content" class="wechat-content-box"
+            <div v-html="item.content" class="wechat-content-box" ref="contentRef"
                 :class="{ 'wechat-content': !showAll, 'text-black': !isDark, 'text-white': isDark }">
             </div>
-            <div class="color-wechat-primary pl-8 cursor-pointer" @click="toogleShowAll">
+            <div class="color-wechat-primary cursor-pointer " @click="toogleShowAll" v-if="showToggleAll">
                 {{ showAll ? '收起' : '全文' }}
             </div>
             <div>
@@ -69,7 +79,7 @@ const fakerComment = () => {
                 </div>
                 <div class="mt-2">
                     <label class="color-wechat-primary comment-name cursor-pointer">{{ names[0] }}</label>
-                    {{ fakerComment() }}
+                    {{ fakerComment }}
                 </div>
             </div>
         </div>

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { useDark, useToggle } from "@vueuse/core";
-import { onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import { CurrentUser, isMobileDevice, useAuthJudge, useFetchCardList, useQueryCurrentUser } from "../../utils";
 import { useUserStore } from "../../store";
 import { useRouter } from "vue-router";
 import WeChatCard from "../components/WeChatCard.vue";
-
+import { ArrowUpCircleSharp, ArrowUpCircleOutline } from '@vicons/ionicons5'
+import { NIcon } from "naive-ui";
 const bgImg = 'https://images.unsplash.com/photo-1489861408921-2f6a1e6c1155?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
 
 const userStore = useUserStore()
@@ -41,6 +42,31 @@ useAuthJudge(async () => {
 }, () => {
     router.replace('/')
 })
+
+const toTop = () => {
+    document.body.scrollTo({
+        behavior: 'smooth',
+        top: 0
+    })
+}
+
+const showToTop = ref(false)
+
+const handleBodyScroll = () => {
+    if (document.body.scrollTop > 0) {
+        showToTop.value = true
+    } else {
+        showToTop.value = false;
+    }
+}
+
+document.body.addEventListener('scroll', handleBodyScroll)
+
+onBeforeUnmount(() => {
+    document.body.removeEventListener('scroll', handleBodyScroll)
+})
+
+
 
 </script>
 
@@ -82,6 +108,9 @@ useAuthJudge(async () => {
         </div>
         <i class="absolute right-4 bottom-4 iconfont cursor-pointer text-yellow text-6"
             :class="{ 'icon-moon': !isDark, 'icon-sun': isDark, }" @click="() => toggleDark()"></i>
+        <NIcon :component="isDark ? ArrowUpCircleOutline : ArrowUpCircleSharp" @click="toTop" v-if="showToTop"
+            class="absolute bottom-18 right-3 text-8 cursor-pointer">
+        </NIcon>
     </div>
 </template>
 
